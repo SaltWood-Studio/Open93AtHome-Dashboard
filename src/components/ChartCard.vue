@@ -1,7 +1,7 @@
 <template>
   <v-card>
-    <v-card-title>{{ title }}</v-card-title>
-    <v-card-subtitle style="padding-bottom: 10px;">盐木可爱哈斯哈四</v-card-subtitle>
+    <v-card-title class="font-weight-black">{{ title }}</v-card-title>
+    <v-card-title class="font-weight-black">{{ title }}</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
       <div :id="'chart' + chartId" style="height: 300px;"></div>
@@ -22,6 +22,10 @@ export default {
       type: String,
       required: true,
     },
+    subtitle: {
+      type: String,
+      required: true,
+    },
     chartData: {
       type: Array,
       required: true,
@@ -39,9 +43,15 @@ export default {
         const myChart = echarts.init(chartDom);
 
         const option = {
+          title: {
+            subtext: this.subtitle
+          },
           xAxis: {
             type: 'category',
             data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          },
+          tooltip: {
+            trigger: 'axis'
           },
           yAxis: {
             type: 'value',
