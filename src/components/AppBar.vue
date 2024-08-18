@@ -6,7 +6,11 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer">
+    <v-navigation-drawer
+      v-model="drawer"
+      :permanent="$vuetify.display.smAndUp"
+      :clipped="$vuetify.display.mdAndUp"
+    >
       <!-- 加个空白 -->
       <v-list-item>
         <v-row>
@@ -33,8 +37,11 @@
 <script>
 export default {
   data: () => ({
-    drawer: true, // 抽屉栏默认显示
+    drawer: false,
   }),
+  mounted() {
+    this.drawer = this.$vuetify.display.smAndUp; // 根据屏幕大小设置抽屉栏的初始状态
+  },
 };
 </script>
 

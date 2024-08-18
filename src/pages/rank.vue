@@ -13,16 +13,16 @@
               :items-per-page="10"
             >
             <template v-slot:item.rank="{ item }">
-                <span class="font-weight-black">#{{ item.rank }}</span>
+              <span class="font-weight-black">#{{ item.rank }}</span>
             </template>
             <template v-slot:item.isOnline="{ item }">
-                <v-chip
-                  :color="item.isOnline ? 'green' : 'red'"
-                  small
-                  label
-                >
-                  {{ item.isOnline ? '在线' : '离线' }}
-                </v-chip>
+              <v-chip
+                :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
+                :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')"
+                label
+              >
+              {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
+              </v-chip>
             </template>
             </v-data-table>
           </v-card-text>
@@ -45,12 +45,20 @@ export default {
     headers: [
       { title: '节点名次', value: 'rank' },
       { title: '名称', value: 'name' },
-      { title: '访问次数', value: 'hits' },
-      { title: '传输字节数', value: 'bytes' },
+      { title: '请求数', value: 'hits' },
+      { title: '流量', value: 'bytes' },
       { title: '在线状态', value: 'isOnline' },
     ],
     items: [],
   }),
+  methods: {
+    formatBytes(bytes) {
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+      if (bytes === 0) return '0 Bytes';
+      const i = Math.floor(Math.log(bytes) / Math.log(1024));
+      return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+    },
+  },
   async created() {
     try {
       const response = await axios.get('https://saltwood.top:9393/93AtHome/rank');
@@ -59,8 +67,9 @@ export default {
         id: item.id,
         name: item.name,
         hits: item.hits,
-        bytes: item.bytes,
+        bytes: this.formatBytes(item.bytes),
         isOnline: item.isOnline,
+        isBanned: item.isBanned,
       }));
     } catch (error) {
       console.error('Failed to fetch data:', error);
