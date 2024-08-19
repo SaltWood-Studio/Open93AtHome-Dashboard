@@ -61,7 +61,7 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('https://saltwood.top:9393/93AtHome/rank');
+      const response = await axios.get('/93AtHome/rank');
       this.items = response.data.map((item, index) => ({
         rank: index + 1,
         id: item.id,

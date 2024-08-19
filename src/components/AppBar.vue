@@ -20,8 +20,8 @@
         </v-row>
       </v-list-item>
       <v-list density="compact" nav>
-        <v-list-item :to="{ path: '/' }" prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
-        <v-list-item :to="{ path: '/rank' }" prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
+        <v-list-item :to="{ path: '/dashboard' }" prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
+        <v-list-item :to="{ path: '/dashboard/rank' }" prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
         <v-list-item link title="Ray是巨佬"></v-list-item>
       </v-list>
     </v-navigation-drawer>
