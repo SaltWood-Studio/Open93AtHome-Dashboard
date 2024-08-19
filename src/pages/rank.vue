@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import AppBar from '../components/AppBar.vue';
+import AppBar from '@/components/AppBar.vue';
 import axios from 'axios';
 
 export default {

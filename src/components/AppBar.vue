@@ -44,9 +44,3 @@ export default {
   },
 };
 </script>
-
-<style>
-  .v-card {
-    margin: 10px;
-  }
-</style>

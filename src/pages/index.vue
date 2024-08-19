@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import AppBar from '../components/AppBar.vue';
-import ChartCard from '../components/ChartCard.vue';
+import AppBar from '@/components/AppBar.vue';
+import ChartCard from '@/components/ChartCard.vue';
 
 export default {
   components: {

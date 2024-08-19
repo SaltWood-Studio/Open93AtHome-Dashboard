@@ -13,6 +13,7 @@
     "core-js": "^3.37.1",
     "echarts": "^5.5.1",
     "roboto-fontface": "*",
+    "unplugin-vue-router": "^0.10.7",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11"
   },
