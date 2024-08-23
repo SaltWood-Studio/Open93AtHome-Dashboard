@@ -46,13 +46,16 @@
           <!-- 登录成功 -->
           <v-card-text v-else-if="success">
             <h2 class="mb-5">登录成功！</h2>
-            <p>欢迎回来，您已成功登录。</p>
+            <h3>欢迎回来，{{ username }}</h3>
+            <p class="mb-3">今天你也很聪明！</P>
+            <p>如未自动跳转，请手动跳转</p>
           </v-card-text>
           
           <!-- 登录失败 -->
           <v-card-text v-else>
             <h2 class="mb-5">登录失败</h2>
-            <p>服务器爆啦！</p>
+            <p class="mb-2">服务器炸啦！</p>
+            <p>{{ failurerea }}</p>
           </v-card-text>
 
         </v-card>
@@ -63,6 +66,7 @@
 
 <script>
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default {
   name: 'login',
@@ -74,7 +78,9 @@ export default {
     };
   },
   created() {
-    if (this.$route.query.code) {
+    if (Cookies.get('token')) {
+      this.redirectToHome();
+    } else if (this.$route.query.code) {
       this.loading = true;
       this.callback(this.$route.query.code).finally(() => {
         this.loading = false;
@@ -109,17 +115,32 @@ export default {
         if (response.status === 200) {
           this.success = true;
           this.loading = false;
+          this.username = response.data.username
+          setTimeout(() => {
+            this.$router.push('.');
+          }, 300);
         } else {
           this.failure = true;
           console.log(response.data);
           console.log("Login failed with status:", response.status);
+          this.failurerea = response.data.error;
           this.loading = false;
         }
       } catch (error) {
-        this.failure = true;
-        console.error("Login failed:", error);
-        this.loading = false;
+         if (error.response && error.response.status === 500) {
+            this.failure = true;
+            this.failurerea = error.response.data.error;
+            this.loading = false;
+        } else {
+            this.failure = true;
+            console.error("Login failed:", error);
+            this.failurerea = error;
+            this.loading = false;
+        }
       }
+    },
+    redirectToHome() {
+      this.$router.push('..');
     },
   },
 };

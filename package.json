@@ -12,6 +12,7 @@
     "axios": "^1.7.4",
     "core-js": "^3.37.1",
     "echarts": "^5.5.1",
+    "js-cookie": "^3.0.5",
     "roboto-fontface": "*",
     "unplugin-vue-router": "^0.10.7",
     "vue": "^3.4.31",
