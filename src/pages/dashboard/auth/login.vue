@@ -117,8 +117,8 @@ export default {
           this.loading = false;
           this.username = response.data.username
           setTimeout(() => {
-            this.$router.push('.');
-          }, 300);
+            this.redirectToHome();
+          }, 3000);
         } else {
           this.failure = true;
           console.log(response.data);

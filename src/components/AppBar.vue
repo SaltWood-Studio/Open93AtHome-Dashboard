@@ -48,18 +48,11 @@
       :permanent="$vuetify.display.smAndUp"
       :clipped="$vuetify.display.mdAndUp"
     >
-      <!-- 加个空白 -->
-      <v-list-item>
-        <v-row>
-          <v-col cols="12">
-            <div style="height: 10px;"></div>
-          </v-col>
-        </v-row>
-      </v-list-item>
-      <v-list density="compact" nav>
+      <v-list class="mt-10" density="compact" nav>
         <v-list-item :to="{ path: '.' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
         <v-list-item :to="{ path: 'rank' }" exact prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
-        <v-list-item link title="Ray是巨佬"></v-list-item>
+        <v-divider v-if="isLoggedIn" class="mb-1"></v-divider>
+        <v-list-item v-if="isLoggedIn" :to="{ path: 'clusters' }" exact prepend-icon="mdi-server" title="我的节点"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 

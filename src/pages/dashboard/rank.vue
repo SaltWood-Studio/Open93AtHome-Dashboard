@@ -64,10 +64,10 @@ export default {
       const response = await axios.get('/93AtHome/rank');
       this.items = response.data.map((item, index) => ({
         rank: index + 1,
-        id: item.id,
-        name: item.name,
-        hits: item.hits,
-        bytes: this.formatBytes(item.bytes),
+        id: item.clusterId,
+        name: item.clusterName,
+        hits: item.hits !== null ? item.hits : 0,
+        bytes: this.formatBytes(item.traffic !== null ? item.traffic : 0),
         isOnline: item.isOnline,
         isBanned: item.isBanned,
       }));
