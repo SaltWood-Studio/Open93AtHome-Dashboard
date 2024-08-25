@@ -85,6 +85,7 @@
 import AppBar from '@/components/AppBar.vue';
 import ClusterCard from '@/components/ClusterCard.vue';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export default {
   components: {
@@ -145,10 +146,9 @@ export default {
     bindsuccess() {
       this.cancel();
       location.reload();
-    }
-  },
-  async created() {
-    try {
+    },
+    async getclusters() {
+      try {
       const response = await axios.get('/93AtHome/dashboard/user/clusters');
       this.cards = response.data.map((item) => ({
         clusterId: item.clusterId,
@@ -158,7 +158,16 @@ export default {
         createdAt: item.isOnline,
       }));
     } catch (error) {
+
       console.error('Failed to fetch data:', error);
+    }
+    }
+  },
+  created() {
+    if (Cookies.get('token')) {
+      this.getclusters();
+    } else{
+      this.$router.push({ path: './auth/login' });
     }
   },
 };
