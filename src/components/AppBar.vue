@@ -51,8 +51,19 @@
       <v-list class="mt-10" density="compact" nav>
         <v-list-item :to="{ path: '.' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
         <v-list-item :to="{ path: 'rank' }" exact prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
-        <v-divider v-if="isLoggedIn" class="mb-1"></v-divider>
-        <v-list-item v-if="isLoggedIn" :to="{ path: 'clusters' }" exact prepend-icon="mdi-server" title="我的节点"></v-list-item>
+        <v-list-group v-if="isLoggedIn">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-server"
+            title="节点管理"
+          ></v-list-item>
+        </template>
+
+        <v-list-item :to="{ path: 'clusters' }" title="我的节点"></v-list-item>
+
+      </v-list-group>
+
       </v-list>
     </v-navigation-drawer>
 
@@ -96,7 +107,8 @@ export default {
         this.userName = response.data.login;
       } catch (error) {
         this.loading = false;
-        console.error("Failed to get client_id:", error);
+        this.isLoggedIn = false;
+        console.error("Failed to get profile:", error);
       }
     },
     login() {
