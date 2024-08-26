@@ -2,7 +2,7 @@
   <AppBar>
     <v-row>
       <v-col cols="12" md="8" lg="4" v-for="(card, index) in cards" :key="index">
-        <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint" :bandwidth="card.bandwidth" :createdAt="card.createdAt"/>
+        <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint" :bandwidth="card.bandwidth" :createdAt="card.createdAt" :inOnline="card.inOnline"/>
       </v-col>
 
       <v-col cols="12" md="8" lg="4">
@@ -74,7 +74,7 @@
           {{ failurerea }}
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="bindsuccess">确认</v-btn>
+          <v-btn text @click="cancel">确认</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -155,10 +155,10 @@ export default {
         clusterName: item.clusterName,
         endPoint: item.endpoint,
         bandwidth: item.bandwidth,
-        createdAt: item.isOnline,
+        createdAt: item.createdAt,
+        inOnline: item.inOnline,
       }));
     } catch (error) {
-
       console.error('Failed to fetch data:', error);
     }
     }

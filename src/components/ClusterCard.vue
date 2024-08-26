@@ -1,8 +1,27 @@
 <template>
   <v-card height="460px">
-    <v-card-title class="font-weight-black red-bg white-text">
-      {{ clusterName }}
+    <v-card-title 
+      :class="{'font-weight-black red-bg white-text': !isOnline, 'font-weight-black green-bg white-text': isOnline}"
+    >
+    <v-row align="center" no-gutters>
+      <v-col>
+        <span>{{ clusterName }}</span>
+      </v-col>
+      <v-btn 
+      icon
+      variant="text"
+      @click="toCluster"
+      >
+      <v-icon>mdi-cog</v-icon>
+      <v-tooltip
+        activator="parent"
+        location="top"
+      >节点详情</v-tooltip>
+      </v-btn>
+    </v-row>
+
     </v-card-title>
+
     <v-tabs v-model="activeTab" background-color="transparent" grow>
       <v-tab key="0">基本信息</v-tab>
       <v-tab key="1">赞助信息</v-tab>
@@ -70,6 +89,10 @@ export default {
     createdAt: {
       type: String,
       required: true,
+    },
+    isOnline: {
+      type: Boolean,
+      required: true,
     }
   },
   data() {
@@ -77,12 +100,21 @@ export default {
       activeTab: 0, // 初始激活的Tab
     };
   },
+  methods: {
+    toCluster() {
+      this.$router.push({ path: `${this.$route.path}/${this.clusterId}` });
+    },
+  }
 };
 </script>
 
 <style scoped>
 .red-bg {
   background-color: rgb(255, 61, 113);
+}
+
+.green-bg {
+  background-color: rgb(0,200,134);
 }
 
 .white-text {

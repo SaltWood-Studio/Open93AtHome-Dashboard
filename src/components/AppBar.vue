@@ -108,6 +108,7 @@ export default {
       } catch (error) {
         this.loading = false;
         this.isLoggedIn = false;
+        Cookies.remove('token');
         console.error("Failed to get profile:", error);
       }
     },
