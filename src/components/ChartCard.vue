@@ -3,7 +3,7 @@
     <v-card-title class="font-weight-black">{{ title }}</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
-      <div :id="'chart' + chartId" style="height: 300px;"></div>
+      <div ref="chartRef" style="height: 300px;"></div>
     </v-card-text>
   </v-card>
 </template>
@@ -31,10 +31,11 @@ const props = defineProps({
   },
 });
 
+const chartRef = ref(null);
+
 const initChart = () => {
-  const chartDom = document.getElementById('chart' + props.chartId);
-  if (chartDom) {
-    const myChart = echarts.init(chartDom);
+  if (chartRef.value) {
+    const myChart = echarts.init(chartRef.value);
 
     const option = {
       title: {
@@ -62,7 +63,7 @@ const initChart = () => {
 
     myChart.setOption(option);
   } else {
-    console.error(`Chart DOM with id chart${props.chartId} not found.`);
+    console.error('Chart DOM element not found.');
   }
 };
 
