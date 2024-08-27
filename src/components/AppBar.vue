@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>93Home-Dash</v-toolbar-title>
       <v-spacer></v-spacer>
-      
+
       <template v-slot:append>
         <v-btn icon id="menu-activator">
           <v-icon>mdi-account-circle</v-icon>
@@ -18,22 +18,12 @@
               <v-avatar :image="avatarUrl" size="70"></v-avatar>
               <h3 class="my-3">{{ userName }}</h3>
               <v-divider class="my-4"></v-divider>
-              <v-btn
-                variant="text"
-                prepend-icon="mdi-login"
-                v-if="!isLoggedIn"
-                @click="login"
-                >
-                  登录
+              <v-btn variant="text" prepend-icon="mdi-login" v-if="!isLoggedIn" @click="login">
+                登录
               </v-btn>
 
-              <v-btn
-                variant="text"
-                prepend-icon="mdi-logout"
-                v-if="isLoggedIn"
-                @click="logout"
-                >
-                  登出
+              <v-btn variant="text" prepend-icon="mdi-logout" v-if="isLoggedIn" @click="logout">
+                登出
               </v-btn>
 
             </div>
@@ -43,26 +33,20 @@
 
     </v-app-bar>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      :permanent="$vuetify.display.smAndUp"
-      :clipped="$vuetify.display.mdAndUp"
-    >
+    <v-navigation-drawer v-model="$vuetify.display.smAndUp" :permanent="$vuetify.display.smAndUp"
+      :clipped="$vuetify.display.mdAndUp">
       <v-list class="mt-10" density="compact" nav>
-        <v-list-item :to="{ path: '.' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
-        <v-list-item :to="{ path: 'rank' }" exact prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
+        <v-list-item :to="{ path: '/dashboard' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
+        <v-list-item :to="{ path: '/dashboard/rank' }" exact prepend-icon="mdi-trophy-variant"
+          title="节点排行"></v-list-item>
         <v-list-group v-if="isLoggedIn">
-        <template v-slot:activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-server"
-            title="节点管理"
-          ></v-list-item>
-        </template>
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" prepend-icon="mdi-server" title="节点管理"></v-list-item>
+          </template>
 
-        <v-list-item :to="{ path: 'clusters' }" title="我的节点"></v-list-item>
+          <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
-      </v-list-group>
+        </v-list-group>
 
       </v-list>
     </v-navigation-drawer>
@@ -75,50 +59,43 @@
   </v-app>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export default {
-  data: () => ({
-    drawer: false,
-    isLoggedIn: false,
-    userName: '未登录',
-    avatarUrl: 'default_avatar.png',
-  }),
-  created(){
-    if(Cookies.get('token')){
-      this.isLoggedIn = true;
-      this.getProfile();
-    }
-    else{
+const router = useRouter();
+const isLoggedIn = ref(false);
+const userName = ref('未登录');
+const avatarUrl = ref('default_avatar.png');
 
-    }
-  },
-  mounted() {
-    this.drawer = this.$vuetify.display.smAndUp;
-  },
-  methods: {
-    async getProfile() {
-      try {
-        this.loading = true;
-        const response = await axios.get('/93AtHome/dashboard/user/profile');
-        this.avatarUrl = response.data.avatar_url;
-        this.userName = response.data.login;
-      } catch (error) {
-        this.loading = false;
-        this.isLoggedIn = false;
-        Cookies.remove('token');
-        console.error("Failed to get profile:", error);
-      }
-    },
-    login() {
-      this.$router.push('auth/login');
-    },
-    logout() {
-      Cookies.remove('token');
-      location.reload();
-    },
+const getProfile = async () => {
+  try {
+    const response = await axios.get('/93AtHome/dashboard/user/profile');
+    avatarUrl.value = response.data.avatar_url;
+    userName.value = response.data.login;
+  } catch (error) {
+    isLoggedIn.value = false;
+    Cookies.remove('token');
+    console.error("Failed to get profile:", error);
   }
-};
+}
+
+const login = () => {
+  router.push('/dashboard/auth/login');
+}
+
+const logout = () => {
+  Cookies.remove('token');
+  location.reload();
+}
+
+onMounted(async () => {
+  if (Cookies.get('token')) {
+    isLoggedIn.value = true;
+    getProfile();
+  }
+})
+
 </script>

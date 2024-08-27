@@ -2,22 +2,16 @@
   <AppBar>
     <v-row>
       <v-col cols="12" md="8" lg="4" v-for="(card, index) in cards" :key="index">
-        <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint" :bandwidth="card.bandwidth" :createdAt="card.createdAt" :inOnline="card.inOnline"/>
+        <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint"
+          :bandwidth="card.bandwidth" :createdAt="card.createdAt" :inOnline="card.inOnline" />
       </v-col>
 
       <v-col cols="12" md="8" lg="4">
         <v-card height="460px">
           <v-container fluid class="d-flex justify-center align-center" style="height: 100%;">
-            <v-card 
-              width="95%" 
-              height="95%" 
-              class="text-center" 
-              style="display: flex; 
+            <v-card width="95%" height="95%" class="text-center" style="display: flex; 
               align-items: center; 
-              justify-content: center;"
-              variant="text"
-              @click="showInput = true"
-            >
+              justify-content: center;" variant="text" @click="showInput = true">
               <v-card-text>
                 <v-icon icon="mdi-paperclip-plus" size="45"></v-icon>
                 <h3>绑定节点</h3>
@@ -51,7 +45,8 @@
           </template>
 
           <template v-slot:append>
-            <v-progress-circular color="primary" indeterminate="disable-shrink" size="16" width="2"></v-progress-circular>
+            <v-progress-circular color="primary" indeterminate="disable-shrink" size="16"
+              width="2"></v-progress-circular>
           </template>
         </v-list-item>
       </v-list>
@@ -81,94 +76,87 @@
   </AppBar>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import AppBar from '@/components/AppBar.vue';
 import ClusterCard from '@/components/ClusterCard.vue';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-export default {
-  components: {
-    AppBar,
-    ClusterCard,
-  },
-  data: () => ({
-    cards: [
-      //{ clusterId: '1', clusterName: '这是一个节点', endPoint: '1.4.5.1:1145', bandwidth: 300, createdAt: '1145-14-19 14:45:14' },
-      //{ clusterId: '2', clusterName: '这是两个节点', endPoint: '1.4.5.1:1145', bandwidth: 300, createdAt: '1145-14-19 14:45:14' },
-    ],
-    showInput: false,
-    loading: false,
-    successDialog: false,
-    errorDialog: false,
-    clusterId: '',
-    clusterSecret: '',
-    failurerea: '',
-  }),
-  methods: {
-    async bindcluster() {
-      this.loading = true;
-      try {
-        const Url = `/93AtHome/dashboard/user/bindCluster`;
-        const response = await axios.post(Url, {
-            clusterId: this.clusterId,
-            clusterSecret: this.clusterSecret,
-        });
-        this.loading = false;
-        if (response.status === 200) {
-          this.successDialog = true;
-        }
-      } catch (error) {
-        this.loading = false;
-        if (error.response && error.response.status) {
-          if (error.response.status === 401) {
-            this.failurerea = '登录已失效';
-          } else if (error.response.status === 404) {
-            this.failurerea = '不存在该节点或该节点已被绑定';
-          } else {
-            this.failurerea = '发生未知错误';
-          }
-        } else {
-          this.failurerea = '网络错误';
-        }
-        this.errorDialog = true;
-        console.error("Failed to bind cluster:", error);
-      }
-    },
-    cancel() {
-      this.showInput = false;
-      this.loading = false;
-      this.successDialog = false;
-      this.errorDialog = false;
-      this.clusterId = '';
-      this.clusterSecret = '';
-    },
-    bindsuccess() {
-      this.cancel();
-      location.reload();
-    },
-    async getclusters() {
-      try {
-      const response = await axios.get('/93AtHome/dashboard/user/clusters');
-      this.cards = response.data.map((item) => ({
-        clusterId: item.clusterId,
-        clusterName: item.clusterName,
-        endPoint: item.endpoint,
-        bandwidth: item.bandwidth,
-        createdAt: item.createdAt,
-        inOnline: item.inOnline,
-      }));
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-    }
-  },
-  created() {
-    if (Cookies.get('token')) {
-      this.getclusters();
-    } else{
-      this.$router.push({ path: './auth/login' });
-    }
-  },
+const cards = ref([]);
+const showInput = ref(false);
+const loading = ref(false);
+const successDialog = ref(false);
+const errorDialog = ref(false);
+const clusterId = ref('');
+const clusterSecret = ref('');
+const failurerea = ref('');
+
+const cancel = () => {
+  showInput.value = false;
+  loading.value = false;
+  successDialog.value = false;
+  errorDialog.value = false;
+  clusterId.value = '';
+  clusterSecret.value = '';
 };
+
+const bindsuccess = () => {
+  cancel();
+  location.reload();
+};
+
+const bindcluster = async () => {
+  loading.value = true;
+  try {
+    const Url = `/93AtHome/dashboard/user/bindCluster`;
+    const response = await axios.post(Url, {
+      clusterId: clusterId.value,
+      clusterSecret: clusterSecret.value,
+    });
+    loading.value = false;
+    if (response.status === 200) {
+      successDialog.value = true;
+    }
+  } catch (error) {
+    loading.value = false;
+    if (error.response && error.response.status) {
+      if (error.response.status === 401) {
+        failurerea.value = '登录已失效';
+      } else if (error.response.status === 404) {
+        failurerea.value = '不存在该节点或该节点已被绑定';
+      } else {
+        failurerea.value = '发生未知错误';
+      }
+    } else {
+      failurerea.value = '网络错误';
+    }
+    errorDialog.value = true;
+    console.error("Failed to bind cluster:", error);
+  }
+};
+
+const getclusters = async () => {
+  try {
+    const response = await axios.get('/93AtHome/dashboard/user/clusters');
+    cards.value = response.data.map((item) => ({
+      clusterId: item.clusterId,
+      clusterName: item.clusterName,
+      endPoint: item.endpoint,
+      bandwidth: item.bandwidth,
+      createdAt: item.createdAt,
+      inOnline: item.inOnline,
+    }));
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+  }
+};
+
+onMounted(async () => {
+  if (Cookies.get('token')) {
+    await getclusters();
+  } else {
+    this.$router.push({ path: '/dashboard/auth/login' });
+  }
+});
 </script>
