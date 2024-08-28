@@ -3,12 +3,20 @@ import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 
 export const router = createRouter({
   history: createWebHistory(),
-  routes, 
+  routes: [
+    ...routes,
+    {
+      path: '/dashboard/auth/login',
+      meta: { hideAppBar: true },
+    },
+  ],
+
+
 })
 
 // This will update routes at runtime without reloading the page
-if (import.meta.hot) { 
+if (import.meta.hot) {
   handleHotUpdate(router)
-} 
+}
 
 export default router

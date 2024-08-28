@@ -45,6 +45,8 @@
 
           <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
+          <v-list-item v-if="is" :to="{ path: '/dashboard/admin' }" title="我的节点"></v-list-item>
+
         </v-list-group>
 
       </v-list>
@@ -55,6 +57,7 @@
         <slot></slot>
       </v-container>
     </v-main>
+
   </v-app>
 </template>
 
@@ -100,6 +103,7 @@ onMounted(async () => {
     isLoggedIn.value = true;
     getProfile();
   }
+  console.log(route.meta);
 })
 
 </script>

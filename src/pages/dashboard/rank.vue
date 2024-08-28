@@ -1,29 +1,31 @@
 <template>
-  <v-row>
-    <v-col cols="12">
-      <v-card prepend-icon="mdi-trophy-variant">
-        <template v-slot:title>
-          <span class="font-weight-black">节点排行榜</span>
-        </template>
-        <v-card-text>
-          <v-data-table :headers="headers" :items="items" :items-per-page="10">
-            <template v-slot:item.rank="{ item }">
-              <span class="font-weight-black">#{{ item.rank }}</span>
-            </template>
-            <template v-slot:item.sponsor="{ item }">
-              <a :href="item.sponsorUrl">{{ item.sponsor }}</a>
-            </template>
-            <template v-slot:item.isOnline="{ item }">
-              <v-chip :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
-                :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')" label>
-                {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
-              </v-chip>
-            </template>
-          </v-data-table>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+  <AppBar>
+    <v-row>
+      <v-col cols="12">
+        <v-card prepend-icon="mdi-trophy-variant">
+          <template v-slot:title>
+            <span class="font-weight-black">节点排行榜</span>
+          </template>
+          <v-card-text>
+            <v-data-table :headers="headers" :items="items" :items-per-page="10">
+              <template v-slot:item.rank="{ item }">
+                <span class="font-weight-black">#{{ item.rank }}</span>
+              </template>
+              <template v-slot:item.sponsor="{ item }">
+                <a :href="item.sponsorUrl">{{ item.sponsor }}</a>
+              </template>
+              <template v-slot:item.isOnline="{ item }">
+                <v-chip :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
+                  :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')" label>
+                  {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
+                </v-chip>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </AppBar>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
