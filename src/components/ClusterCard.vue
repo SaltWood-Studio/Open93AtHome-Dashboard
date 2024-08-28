@@ -33,8 +33,8 @@
         </v-tabs-window-item>
 
         <v-tabs-window-item key="1">
-          <p>啦啦啦</p>
-          <p>TODO..</p>
+          <v-text-field label="名称" :model-value="sponsor" readonly></v-text-field>
+          <v-text-field label="跳转链接" :model-value="sponsorUrl" readonly></v-text-field>
         </v-tabs-window-item>
       </v-tabs-window>
 
@@ -47,6 +47,7 @@ import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
+  // 迟早把这个改成传入数组（
   clusterId: {
     type: String,
     required: true,
@@ -68,6 +69,14 @@ const props = defineProps({
     required: true,
   },
   isOnline: {
+    type: Boolean,
+    required: true,
+  },
+  sponsor: {
+    type: Boolean,
+    required: true,
+  },
+  sponsorUrl: {
     type: Boolean,
     required: true,
   }

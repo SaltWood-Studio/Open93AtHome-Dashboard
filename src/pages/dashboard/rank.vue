@@ -1,34 +1,34 @@
 <template>
-  <AppBar>
-    <v-row>
-      <v-col cols="12">
-        <v-card prepend-icon="mdi-trophy-variant">
-          <template v-slot:title>
-            <span class="font-weight-black">节点排行榜</span>
-          </template>
-          <v-card-text>
-            <v-data-table :headers="headers" :items="items" :items-per-page="10">
-              <template v-slot:item.rank="{ item }">
-                <span class="font-weight-black">#{{ item.rank }}</span>
-              </template>
-              <template v-slot:item.isOnline="{ item }">
-                <v-chip :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
-                  :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')" label>
-                  {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
-                </v-chip>
-              </template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </AppBar>
+  <v-row>
+    <v-col cols="12">
+      <v-card prepend-icon="mdi-trophy-variant">
+        <template v-slot:title>
+          <span class="font-weight-black">节点排行榜</span>
+        </template>
+        <v-card-text>
+          <v-data-table :headers="headers" :items="items" :items-per-page="10">
+            <template v-slot:item.rank="{ item }">
+              <span class="font-weight-black">#{{ item.rank }}</span>
+            </template>
+            <template v-slot:item.sponsor="{ item }">
+              <a :href="item.sponsorUrl">{{ item.sponsor }}</a>
+            </template>
+            <template v-slot:item.isOnline="{ item }">
+              <v-chip :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
+                :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')" label>
+                {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
+              </v-chip>
+            </template>
+          </v-data-table>
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import AppBar from '@/components/AppBar.vue';
 import axios from 'axios';
 
 const headers = ref([
@@ -36,6 +36,8 @@ const headers = ref([
   { title: '名称', value: 'name' },
   { title: '请求数', value: 'hits' },
   { title: '流量', value: 'bytes' },
+  { title: '节点拥有者', value: 'ownerName' },
+  { title: '节点赞助商', value: 'sponsor' },
   { title: '在线状态', value: 'isOnline' },
 ]);
 
@@ -57,6 +59,9 @@ onMounted(async () => {
       name: item.clusterName,
       hits: item.hits !== null ? item.hits : 0,
       bytes: formatBytes(item.traffic !== null ? item.traffic : 0),
+      sponsor: item.sponsor,
+      sponsorUrl: item.sponsorUrl,
+      ownerName: item.ownerName,
       isOnline: item.isOnline,
       isBanned: item.isBanned,
     }));

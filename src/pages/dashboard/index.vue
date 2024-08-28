@@ -1,20 +1,17 @@
 <template>
-  <AppBar>
-    <v-row>
-      <v-col cols="12">
-        <v-card title="Test114514" text="Test114514" />
-      </v-col>
-      <v-col cols="12" md="6" lg="3" v-for="(chart, index) in charts" :key="index">
-        <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" />
-      </v-col>
-    </v-row>
-  </AppBar>
+  <v-row>
+    <v-col cols="12">
+      <v-card title="Test114514" text="Test114514" />
+    </v-col>
+    <v-col cols="12" md="6" lg="3" v-for="(chart, index) in charts" :key="index">
+      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" />
+    </v-col>
+  </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import AppBar from '@/components/AppBar.vue';
 import ChartCard from '@/components/ChartCard.vue';
 
 const charts = ref([
@@ -24,5 +21,4 @@ const charts = ref([
   { title: '当日全网总请求数', subtitle: '每小时请求分布（万）', data: [10, 20, 15, 8, 7, 11, 13] },
 ]);
 
-// 可以在这里添加更多的组合逻辑，例如计算属性、方法等
 </script>

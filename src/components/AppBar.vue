@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar color="primary" app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="openDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>93Home-Dash</v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -33,8 +33,7 @@
 
     </v-app-bar>
 
-    <v-navigation-drawer v-model="$vuetify.display.smAndUp" :permanent="$vuetify.display.smAndUp"
-      :clipped="$vuetify.display.mdAndUp">
+    <v-navigation-drawer v-model="drawer" :permanent="$vuetify.display.mdAndUp" :clipped="$vuetify.display.mdAndUp">
       <v-list class="mt-10" density="compact" nav>
         <v-list-item :to="{ path: '/dashboard' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
         <v-list-item :to="{ path: '/dashboard/rank' }" exact prepend-icon="mdi-trophy-variant"
@@ -69,6 +68,11 @@ const router = useRouter();
 const isLoggedIn = ref(false);
 const userName = ref('未登录');
 const avatarUrl = ref('default_avatar.png');
+const drawer = ref(null);
+
+const openDrawer = () => {
+  drawer.value = !drawer.value;
+}
 
 const getProfile = async () => {
   try {
