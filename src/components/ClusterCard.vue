@@ -89,7 +89,6 @@ const toCluster = () => {
   router.push({ path: `/dashboard/clusters/${props.clusterId}` });
 };
 
-const isOnline = computed(() => props.isOnline);
 </script>
 
 <style scoped>

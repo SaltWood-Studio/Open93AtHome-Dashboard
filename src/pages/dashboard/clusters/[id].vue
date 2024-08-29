@@ -1,67 +1,65 @@
 <template>
-    <AppBar>
-        <v-card prepend-icon="mdi-server">
-            <template v-slot:title>
-                <span class="font-weight-black">节点详情</span>
-            </template>
+    <v-card prepend-icon="mdi-server">
+        <template v-slot:title>
+            <span class="font-weight-black">节点详情</span>
+        </template>
 
-            <v-tabs v-model="activeTab" background-color="transparent">
-                <v-tab key="0">基本信息</v-tab>
-                <v-tab key="1">赞助信息</v-tab>
-            </v-tabs>
-            <v-divider></v-divider>
-            <v-card-text>
-                <v-tabs-window v-model="activeTab">
-                    <v-tabs-window-item key="0">
-                        <v-text-field label="ID" :model-value="cluster.clusterId" readonly></v-text-field>
-                        <v-text-field label="名称" v-model="cluster.clusterName" :readonly="!modify"
-                            :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
-                        <v-text-field label="Endpoint" :model-value="`${cluster.endpoint}:${cluster.port}`"
-                            readonly></v-text-field>
-                        <v-text-field label="上行速率" v-model="cluster.bandwidth" :readonly="!modify" suffix="Mbps"
-                            :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+        <v-tabs v-model="activeTab" background-color="transparent">
+            <v-tab key="0">基本信息</v-tab>
+            <v-tab key="1">赞助信息</v-tab>
+        </v-tabs>
+        <v-divider></v-divider>
+        <v-card-text>
+            <v-tabs-window v-model="activeTab">
+                <v-tabs-window-item key="0">
+                    <v-text-field label="ID" :model-value="cluster.clusterId" readonly></v-text-field>
+                    <v-text-field label="名称" v-model="cluster.clusterName" :readonly="!modify"
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                    <v-text-field label="Endpoint" :model-value="`${cluster.endpoint}:${cluster.port}`"
+                        readonly></v-text-field>
+                    <v-text-field label="上行速率" v-model="cluster.bandwidth" :readonly="!modify" suffix="Mbps"
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
 
-                        <v-divider></v-divider>
+                    <v-divider></v-divider>
 
 
-                        <v-divider></v-divider>
+                    <v-divider></v-divider>
 
-                        <v-text-field class="mt-5" label="创建日期" :model-value="formatCreatedAt(cluster.createdAt)"
-                            readonly></v-text-field>
-                        <v-text-field label="离线原因" :model-value="cluster.downReason" readonly></v-text-field>
+                    <v-text-field class="mt-5" label="创建日期" :model-value="formatCreatedAt(cluster.createdAt)"
+                        readonly></v-text-field>
+                    <v-text-field label="离线原因" :model-value="cluster.downReason" readonly></v-text-field>
 
-                        <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
-                            <span v-if="modify">确认更改</span>
-                            <span v-else>更改节点信息</span>
-                        </v-btn>
+                    <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
+                        <span v-if="modify">确认更改</span>
+                        <span v-else>更改节点信息</span>
+                    </v-btn>
 
-                    </v-tabs-window-item>
+                </v-tabs-window-item>
 
-                    <v-tabs-window-item key="1">
-                        <v-text-field label="名称" v-model="cluster.sponsor" :readonly="!modify"
-                            :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
-                        <v-text-field label="跳转链接" v-model="cluster.sponsorUrl" :readonly="!modify"
-                            :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                <v-tabs-window-item key="1">
+                    <v-text-field label="名称" v-model="cluster.sponsor" :readonly="!modify"
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                    <v-text-field label="跳转链接" v-model="cluster.sponsorUrl" :readonly="!modify"
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
 
-                        <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
-                            <span v-if="modify">确认更改</span>
-                            <span v-else>更改赞助信息</span>
-                        </v-btn>
+                    <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
+                        <span v-if="modify">确认更改</span>
+                        <span v-else>更改赞助信息</span>
+                    </v-btn>
 
-                    </v-tabs-window-item>
-                </v-tabs-window>
-            </v-card-text>
-        </v-card>
+                </v-tabs-window-item>
+            </v-tabs-window>
+        </v-card-text>
+    </v-card>
 
-        <v-snackbar v-model="snackbar">
-            {{ modifytext }}
-            <template v-slot:actions>
-                <v-btn color="primary" variant="text" @click="snackbar = false">
-                    关闭
-                </v-btn>
-            </template>
-        </v-snackbar>
-    </AppBar>
+    <v-snackbar v-model="snackbar">
+        {{ modifytext }}
+        <template v-slot:actions>
+            <v-btn color="primary" variant="text" @click="snackbar = false">
+                关闭
+            </v-btn>
+        </template>
+    </v-snackbar>
 </template>
 
 <script setup>
@@ -81,7 +79,7 @@ const modifytext = ref('')
 
 const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt * 1000);
-    const chinaTime = new Date(date.getTime() + (8 * 60 * 60 * 1000));
+    const chinaTime = new Date(date.getTime());
 
     const year = chinaTime.getFullYear();
     const month = String(chinaTime.getMonth() + 1).padStart(2, '0');
@@ -141,3 +139,8 @@ onMounted(async () => {
     }
 })
 </script>
+
+<route lang="yaml">
+    meta:
+      layout: appbar
+  </route>

@@ -1,14 +1,13 @@
 <template>
-  <AppBar>
-    <v-row>
-      <v-col cols="12">
-        <v-card title="Test114514" text="Test114514" />
-      </v-col>
-      <v-col cols="12" md="6" lg="3" v-for="(chart, index) in charts" :key="index">
-        <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" />
-      </v-col>
-    </v-row>
-  </AppBar>
+
+  <v-row>
+    <v-col cols="12">
+      <v-card title="Test114514" text="Test114514" />
+    </v-col>
+    <v-col cols="12" md="6" lg="3" v-for="(chart, index) in charts" :key="index">
+      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" />
+    </v-col>
+  </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
@@ -24,3 +23,8 @@ const charts = ref([
 ]);
 
 </script>
+
+<route lang="yaml">
+  meta:
+    layout: appbar
+</route>

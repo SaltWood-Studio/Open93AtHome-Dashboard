@@ -4,6 +4,7 @@ import Vue from '@vitejs/plugin-vue'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 import ViteFonts from 'unplugin-fonts/vite'
 import VueRouter from 'unplugin-vue-router/vite'
+import Layouts from 'vite-plugin-vue-layouts';
 
 // Utilities
 import { defineConfig } from 'vite'
@@ -14,6 +15,7 @@ export default defineConfig({
   base: '/dashboard/',
   plugins: [
     VueRouter(),
+    Layouts(),
     Vue({
       template: { transformAssetUrls }
     }),
