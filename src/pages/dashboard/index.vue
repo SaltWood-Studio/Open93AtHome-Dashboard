@@ -1,27 +1,105 @@
 <template>
-
   <v-row>
     <v-col cols="12">
-      <v-card title="Test114514" text="Test114514" />
+      <v-card>
+        <v-row>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">当前在线节点</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ onlines }} 个
+            </v-card-text>
+          </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">当日全网总请求</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ todayhits }} 次
+            </v-card-text>
+          </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">当日全网总流量</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ todaybytes }}
+            </v-card-text>
+          </v-col>
+        </v-row>
+      </v-card>
     </v-col>
-    <v-col cols="12" md="6" lg="3" v-for="(chart, index) in charts" :key="index">
-      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" />
+    <v-col cols="12" md="6" lg="6" v-for="(chart, index) in charts" :key="index">
+      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chartData="chart.data"
+        :chartunit="chart.unit" />
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ChartCard from '@/components/ChartCard.vue';
+import axios from 'axios';
 
 const charts = ref([
-  { title: '当前在线节点', subtitle: '每小时在线节点（个）', data: [120, 200, 150, 80, 70, 110, 130] },
-  { title: '当前出网带宽', subtitle: '平均每小时出网带宽（Mbps）', data: [90, 150, 200, 130, 100, 170, 120] },
-  { title: '当日全网总流量', subtitle: '每小时流量分布（GiB）', data: [300, 400, 350, 200, 150, 250, 300] },
-  { title: '当日全网总请求数', subtitle: '每小时请求分布（万）', data: [10, 20, 15, 8, 7, 11, 13] },
+  { title: '全网流量', subtitle: '', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], unit: '' },
+  { title: '全网请求数', subtitle: '', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], unit: '' },
 ]);
+const todayhits = ref('');
+const todaybytes = ref('');
+const arraydata = ref({});
+const onlines = ref('');
 
+
+const formataBytes = (bytes) => {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Bytes';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+function convertArrayElements(array) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+  // 找到数组中的最大字节值
+  const maxBytes = Math.max(...array);
+
+  // 根据最大字节值计算最适合的单位
+  const maxIndex = Math.min(4, Math.floor(Math.log(maxBytes || 1) / Math.log(1024)));
+  const targetUnit = units[maxIndex];
+
+  // 转换每个字节值到统一的单位
+  const convertedArray = array.map(byteValue => {
+    const i = Math.min(maxIndex, Math.floor(Math.log(byteValue || 1) / Math.log(1024)));
+    return (byteValue / Math.pow(1024, maxIndex)).toFixed(2);
+  });
+
+  return {
+    converted: convertedArray,
+    targetUnit: targetUnit
+  };
+}
+
+const getstatistics = async () => {
+  try {
+    const response = await axios.get('/93AtHome/centerStatistics');
+    arraydata.value = convertArrayElements(response.data.dailyBytes);
+
+    charts.value[0].subtitle = `每日流量分布 (${arraydata.value.targetUnit})`;
+    charts.value[0].data = arraydata.value.converted;
+    charts.value[0].unit = arraydata.value.targetUnit;
+
+    charts.value[1].subtitle = `每日请求分布 (次)`;
+    charts.value[1].data = response.data.dailyHits;
+    charts.value[1].unit = '次';
+
+    todayhits.value = response.data.today.hits;
+    todaybytes.value = formataBytes(response.data.today.bytes);
+    onlines.value = response.data.onlines;
+  } catch (error) {
+    console.error("Failed to get statistics:", error);
+  }
+}
+
+onMounted(async () => {
+  getstatistics();
+});
 </script>
 
 <route lang="yaml">

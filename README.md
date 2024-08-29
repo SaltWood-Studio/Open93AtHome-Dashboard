@@ -6,10 +6,41 @@
 ✨ 一个 93@Home 的 DashBoard 基于 Vue + Vuetify ✨
 </div>
 
-TODO...
+[效果预览](https://saltwood.top:9393/dashboard/)
 
-Vue 初学者，很多代码来自 ChatGPT ，写的屎山大佬勿喷（
+## 🛠️ 使用方法
+
+请搭配 [93@Home](https://github.com/SaltWood-Studio/Open93AtHome-V3) 使用
+
+1. 克隆此仓库到本地：
+
+```bash
+git clone https://github.com/Mxmilu666/93Home-Dash.git
+```
+
+2. 进入项目目录并安装依赖：
+```bash
+cd 93Home-Dash
+npm install
+```
+
+3. 运行开发服务器：
+```bash
+npm run dev
+```
+
+4. 编译
+```bash
+npm run build
+```
+
+## 🌟 致谢
 
 > 希望 [@so1ve](https://github.com/so1ve) 保佑我的代码没有任何 Bug ，没有任何报错呜呜呜
-> 
-> 此面板设计部分抄袭 [iodine-dashboard](https://github.com/ZeroNexis/iodine-dashboard) 快去给它点个 **star**
+>
+>此面板设计部分参考了 [iodine-dashboard](https://github.com/ZeroNexis/iodine-dashboard) ，快去给它点个 star ⭐！
+>
+>一星期速通 Vue 作品，很多代码来自 ChatGPT，如果写的代码有问题，大佬们请轻喷 😅。
+
+## 📄 许可证
+本项目采用 ``MIT 许可证`` 开源。

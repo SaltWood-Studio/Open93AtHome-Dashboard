@@ -3,7 +3,7 @@
     <v-card-title class="font-weight-black">{{ title }}</v-card-title>
     <v-divider></v-divider>
     <v-card-text>
-      <div ref="chartRef" style="height: 300px;"></div>
+      <div ref="chartRef" style="width: 90%; height: 300px;"></div>
     </v-card-text>
   </v-card>
 </template>
@@ -29,6 +29,10 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  chartunit: {
+    type: String,
+    required: true,
+  },
 });
 
 const chartRef = ref(null);
@@ -37,17 +41,28 @@ const initChart = () => {
   if (chartRef.value) {
     const myChart = echarts.init(chartRef.value);
 
+    const today = new Date();
+    const dates = Array.from({ length: 29 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${day}号`;
+    });
+
     const option = {
       title: {
-        text: props.title,
         subtext: props.subtitle,
       },
       xAxis: {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: dates,
       },
       tooltip: {
         trigger: 'axis',
+        formatter: function (params) {
+          var param = params[0];
+          return `<div style="color:${param.color};"><b>${param.name}</b></div>` + param.value +  " " +props.chartunit;
+        }
       },
       yAxis: {
         type: 'value',

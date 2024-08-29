@@ -44,8 +44,6 @@
 
                 <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
-                <v-list-item :to="{ path: '/dashboard/admin' }" title="我的节点"></v-list-item>
-
             </v-list-group>
 
         </v-list>
