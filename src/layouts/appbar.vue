@@ -44,6 +44,8 @@
 
                 <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
+                <v-list-item v-if="isAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超级节点管理"></v-list-item>
+
             </v-list-group>
 
         </v-list>
@@ -62,6 +64,7 @@ import Cookies from 'js-cookie';
 
 const router = useRouter();
 const isLoggedIn = ref(false);
+const isAdmin = ref(false);
 const userName = ref('未登录');
 const avatarUrl = ref('default_avatar.png');
 const drawer = ref(null);
@@ -95,6 +98,9 @@ onMounted(async () => {
     if (Cookies.get('token')) {
         isLoggedIn.value = true;
         getProfile();
+        if (Cookies.get('adminToken')) {
+            isAdmin.value = true;
+        }
     }
 })
 

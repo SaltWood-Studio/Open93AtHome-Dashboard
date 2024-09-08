@@ -27,13 +27,16 @@
 
                     <v-text-field class="mt-5" label="创建日期" :model-value="formatCreatedAt(cluster.createdAt)"
                         readonly></v-text-field>
+                    <v-text-field label="离线时间" :model-value="formatCreatedAt(cluster.downTime)" readonly></v-text-field>
                     <v-text-field label="离线原因" :model-value="cluster.downReason" readonly></v-text-field>
-
                     <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
                         <span v-if="modify">确认更改</span>
                         <span v-else>更改节点信息</span>
                     </v-btn>
 
+                    <v-btn class="ms-2" prepend-icon="mdi-paperclip-minus" @click="showInput = true" color="pink">
+                        <span>解绑节点</span>
+                    </v-btn>
                 </v-tabs-window-item>
 
                 <v-tabs-window-item key="1">
@@ -60,6 +63,21 @@
             </v-btn>
         </template>
     </v-snackbar>
+
+    <v-dialog v-model="showInput" max-width="500px">
+        <v-card prepend-icon="mdi-paperclip-minus" title="解绑节点">
+            <v-card-text>
+                <p>您确定解绑此节点?</p>
+                <p>请在下方完整输入 {{ cluster.clusterId }} 以解绑</p>
+
+                <v-text-field class="mt-4" v-model="clusterId" label="ClusterId" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn text @click="showInput = false">取消</v-btn>
+                <v-btn text @click="unbind">确认</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -76,6 +94,8 @@ const cluster = ref({})
 const modify = ref(false)
 const snackbar = ref(false)
 const modifytext = ref('')
+const showInput = ref(false)
+const clusterId = ref('')
 
 const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt * 1000);
@@ -129,7 +149,30 @@ const modifyinf = async () => {
     }
 };
 
-
+const unbind = async () => {
+    if (cluster.value.clusterId === clusterId) {
+        try {
+            const unbind = await axios.post('/93AtHome/dashboard/user/unbindCluster', {
+                clusterId: cluster.value.clusterId,
+            });
+            modifytext.value = "成功解绑";
+            snackbar.value = true;
+            showInput.value = false;
+            setTimeout(() => {
+                router.push({ path: '/dashboard/clusters' });
+            }, 1000);
+        } catch (error) {
+            modifytext.value = `解绑失败: ${error}`;
+            snackbar.value = true;
+            showInput.value = false;
+            console.error("Failed to modify cluster information:", error);
+        }
+    }
+    else {
+        modifytext.value = `clusterId 不一致`;
+        snackbar.value = true;
+    }
+}
 
 onMounted(async () => {
     if (Cookies.get('token')) {
