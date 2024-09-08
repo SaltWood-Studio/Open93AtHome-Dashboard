@@ -93,6 +93,23 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="showInfoDialog" max-width="400px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">节点信息</span>
+            </v-card-title>
+            <v-card-text>
+                <div><strong>ID:</strong> {{ newClusterId }}</div>
+                <div><strong>Secret:</strong> {{ newClusterSecret }}</div>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="showInfoDialog = false" color="grey" text>
+                    关闭
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -105,6 +122,7 @@ const snackbar = ref(false);
 const modifytext = ref('');
 const createDialog = ref(false);
 const editDialog = ref(false);
+const showInfoDialog = ref(false);
 
 const newClusterName = ref('');
 const newBandwidth = ref(null);
@@ -113,6 +131,9 @@ const editClusterName = ref('');
 const editBandwidth = ref(null);
 const editSponsor = ref('');
 const editSponsorUrl = ref('');
+
+const newClusterId = ref('');
+const newClusterSecret = ref('');
 
 const canEdit = computed(() => selected.value.length === 1);
 
@@ -136,12 +157,21 @@ const openCreateDialog = () => {
 
 const create = async () => {
     try {
-        await axios.post('/93AtHome/super/cluster/create', {
+        const response = await axios.post('/93AtHome/super/cluster/create', {
             clusterName: newClusterName.value,
             bandwidth: newBandwidth.value
         });
 
-        getlist();
+        // 设置新创建节点的信息
+        newClusterId.value = response.data.clusterId;
+        newClusterSecret.value = response.data.clusterSecret;
+        showInfoDialog.value = true;
+
+        // 刷新节点列表
+        await getlist();
+
+        // 取消所有选中项
+        selected.value = [];
 
         createDialog.value = false;
         newClusterName.value = '';
@@ -176,12 +206,12 @@ const update = async () => {
         try {
             const requestBody = {
                 clusterName: editClusterName.value || undefined,
-                bandwidth: editBandwidth.value !== null ? Number(editBandwidth.value) : undefined,
+                bandwidth: editBandwidth.value ? Number(editBandwidth.value) : undefined,
                 sponsor: editSponsor.value || undefined,
                 sponsorUrl: editSponsorUrl.value || undefined
             };
-
             
+
             // Remove undefined fields from the request body
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
@@ -189,7 +219,11 @@ const update = async () => {
                 params: { clusterId }
             });
 
-            getlist();
+            // 刷新节点列表
+            await getlist();
+
+            // 取消所有选中项
+            selected.value = [];
 
             editDialog.value = false;
             editClusterName.value = '';
@@ -230,6 +264,7 @@ const ban = async () => {
 
         modifytext.value = "成功禁用节点";
         snackbar.value = true;
+        await getlist();  // 刷新列表
     } catch (error) {
         modifytext.value = `禁用失败: ${error}`;
         snackbar.value = true;
@@ -238,14 +273,15 @@ const ban = async () => {
 };
 
 const unban = async () => {
-    const clusterIdsToBan = selected.value;
+    const clusterIdsToUnban = selected.value;
 
     try {
-        for (const clusterId of clusterIdsToBan) {
+        for (const clusterId of clusterIdsToUnban) {
             await axios.post('/93AtHome/super/cluster/ban', {
                 ban: false,
                 clusterId: clusterId
             });
+
             items.value = items.value.map(item => {
                 if (item.clusterId === clusterId) {
                     return {
@@ -259,6 +295,7 @@ const unban = async () => {
 
         modifytext.value = "成功解封节点";
         snackbar.value = true;
+        await getlist();  // 刷新列表
     } catch (error) {
         modifytext.value = `解封失败: ${error}`;
         snackbar.value = true;
@@ -276,6 +313,12 @@ const remove = async () => {
             });
         }
 
+        // 刷新节点列表
+        await getlist();
+
+        // 取消所有选中项
+        selected.value = [];
+
         modifytext.value = "成功删除节点";
         snackbar.value = true;
     } catch (error) {
@@ -283,7 +326,7 @@ const remove = async () => {
         snackbar.value = true;
         console.error("Failed to remove cluster:", error);
     }
-};
+}
 
 onMounted(async () => {
     getlist();
