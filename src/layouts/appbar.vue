@@ -37,7 +37,7 @@
             <v-list-item :to="{ path: '/dashboard' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
             <v-list-item :to="{ path: '/dashboard/rank' }" exact prepend-icon="mdi-trophy-variant"
                 title="节点排行"></v-list-item>
-            <v-list-item :to="{ path: '/dashboard/sources' }" exact prepend-icon="mdi-database" title="数据源"></v-list-item>
+            <v-list-item :to="{ path: '/dashboard/sources' }" exact prepend-icon="mdi-database" title="同步源"></v-list-item>
             <v-list-group v-if="isLoggedIn">
                 <template v-slot:activator="{ props }">
                     <v-list-item v-bind="props" prepend-icon="mdi-server" title="节点管理"></v-list-item>
