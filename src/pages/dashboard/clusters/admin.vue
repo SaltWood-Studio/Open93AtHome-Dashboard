@@ -12,6 +12,14 @@
         <span>批量删除</span>
     </v-btn>
 
+    <v-btn class="ms-2" prepend-icon="mdi-plus" @click="openCreateDialog" color="pink">
+        <span>新建节点</span>
+    </v-btn>
+
+    <v-btn class="ms-2" prepend-icon="mdi-pencil" :disabled="!canEdit" @click="openEditDialog" color="pink">
+        <span>修改节点</span>
+    </v-btn>
+
     <v-snackbar v-model="snackbar">
         {{ modifytext }}
         <template v-slot:actions>
@@ -20,22 +28,98 @@
             </v-btn>
         </template>
     </v-snackbar>
+
+    <v-dialog v-model="createDialog" max-width="500px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">新建节点</span>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field
+                    v-model="newClusterName"
+                    label="集群名称"
+                    required
+                ></v-text-field>
+                <v-text-field
+                    v-model="newBandwidth"
+                    label="带宽"
+                    type="number"
+                    required
+                    :rules="[v => !!v || '带宽是必填项']"
+                ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="createDialog = false" color="grey" text>
+                    取消
+                </v-btn>
+                <v-btn @click="create" color="primary">
+                    创建
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="editDialog" max-width="500px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">修改节点信息</span>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field
+                    v-model="editClusterName"
+                    label="集群名称"
+                ></v-text-field>
+                <v-text-field
+                    v-model="editBandwidth"
+                    label="带宽"
+                    type="number"
+                ></v-text-field>
+                <v-text-field
+                    v-model="editSponsor"
+                    label="赞助商"
+                ></v-text-field>
+                <v-text-field
+                    v-model="editSponsorUrl"
+                    label="赞助商网址"
+                ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="editDialog = false" color="grey" text>
+                    取消
+                </v-btn>
+                <v-btn @click="update" color="primary">
+                    更新
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 const items = ref([]);
 const selected = ref([]);
-const snackbar = ref(false)
+const snackbar = ref(false);
 const modifytext = ref('');
+const createDialog = ref(false);
+const editDialog = ref(false);
+
+const newClusterName = ref('');
+const newBandwidth = ref(null);
+
+const editClusterName = ref('');
+const editBandwidth = ref(null);
+const editSponsor = ref('');
+const editSponsorUrl = ref('');
+
+const canEdit = computed(() => selected.value.length === 1);
 
 const getlist = async () => {
     try {
         const response = await axios.get('/93AtHome/list_clusters');
-        items.value = response.data.map((item, index) => ({
+        items.value = response.data.map(item => ({
             clusterId: item.clusterId,
             clusterName: item.clusterName,
             bandwidth: item.bandwidth,
@@ -46,14 +130,89 @@ const getlist = async () => {
     }
 }
 
-const ban = async () => {
-    console.log(selected.value);
+const openCreateDialog = () => {
+    createDialog.value = true;
+}
 
+const create = async () => {
+    try {
+        await axios.post('/93AtHome/super/cluster/create', {
+            clusterName: newClusterName.value,
+            bandwidth: newBandwidth.value
+        });
+
+        getlist();
+
+        createDialog.value = false;
+        newClusterName.value = '';
+        newBandwidth.value = null;
+
+        modifytext.value = "成功创建节点";
+        snackbar.value = true;
+    } catch (error) {
+        modifytext.value = `创建失败: ${error}`;
+        snackbar.value = true;
+        console.error("Failed to create cluster:", error);
+    }
+}
+
+const openEditDialog = () => {
+    if (selected.value.length === 1) {
+        const clusterId = selected.value[0];
+        const cluster = items.value.find(item => item.clusterId === clusterId);
+        if (cluster) {
+            editClusterName.value = cluster.clusterName;
+            editBandwidth.value = cluster.bandwidth;
+            editSponsor.value = ''; 
+            editSponsorUrl.value = ''; 
+            editDialog.value = true;
+        }
+    }
+}
+
+const update = async () => {
+    if (selected.value.length === 1) {
+        const clusterId = selected.value[0];
+        try {
+            const requestBody = {
+                clusterName: editClusterName.value || undefined,
+                bandwidth: editBandwidth.value !== null ? Number(editBandwidth.value) : undefined,
+                sponsor: editSponsor.value || undefined,
+                sponsorUrl: editSponsorUrl.value || undefined
+            };
+
+            
+            // Remove undefined fields from the request body
+            Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
+
+            await axios.post('/93AtHome/super/cluster/profile', requestBody, {
+                params: { clusterId }
+            });
+
+            getlist();
+
+            editDialog.value = false;
+            editClusterName.value = '';
+            editBandwidth.value = null;
+            editSponsor.value = '';
+            editSponsorUrl.value = '';
+
+            modifytext.value = "成功更新节点信息";
+            snackbar.value = true;
+        } catch (error) {
+            modifytext.value = `更新失败: ${error}`;
+            snackbar.value = true;
+            console.error("Failed to update cluster:", error);
+        }
+    }
+}
+
+const ban = async () => {
     const clusterIdsToBan = selected.value;
 
     try {
         for (const clusterId of clusterIdsToBan) {
-            const response = await axios.post('/93AtHome/super/cluster/ban', {
+            await axios.post('/93AtHome/super/cluster/ban', {
                 ban: true,
                 clusterId: clusterId
             });
@@ -83,7 +242,7 @@ const unban = async () => {
 
     try {
         for (const clusterId of clusterIdsToBan) {
-            const response = await axios.post('/93AtHome/super/cluster/ban', {
+            await axios.post('/93AtHome/super/cluster/ban', {
                 ban: false,
                 clusterId: clusterId
             });
@@ -103,18 +262,16 @@ const unban = async () => {
     } catch (error) {
         modifytext.value = `解封失败: ${error}`;
         snackbar.value = true;
-        console.error("Failed to ban cluster:", error);
+        console.error("Failed to unban cluster:", error);
     }
 };
 
 const remove = async () => {
-    console.log(selected.value);
-
-    const clusterIdsToBan = selected.value;
+    const clusterIdsToRemove = selected.value;
 
     try {
-        for (const clusterId of clusterIdsToBan) {
-            const response = await axios.post('/93AtHome/super/cluster/remove', {
+        for (const clusterId of clusterIdsToRemove) {
+            await axios.post('/93AtHome/super/cluster/remove', {
                 clusterId: clusterId
             });
         }
@@ -124,7 +281,7 @@ const remove = async () => {
     } catch (error) {
         modifytext.value = `删除失败: ${error}`;
         snackbar.value = true;
-        console.error("Failed to ban cluster:", error);
+        console.error("Failed to remove cluster:", error);
     }
 };
 
