@@ -21,6 +21,12 @@
               {{ todaybytes }}
             </v-card-text>
           </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">同步源数量</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ sourceCount }} 个
+            </v-card-text>
+          </v-col>
         </v-row>
       </v-card>
     </v-col>
@@ -45,7 +51,7 @@ const todayhits = ref('');
 const todaybytes = ref('');
 const arraydata = ref({});
 const onlines = ref('');
-
+const sourceCount = ref('');
 
 const formataBytes = (bytes) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -78,20 +84,23 @@ function convertArrayElements(array) {
 
 const getstatistics = async () => {
   try {
-    const response = await axios.get('/93AtHome/centerStatistics');
-    arraydata.value = convertArrayElements(response.data.dailyBytes);
+    const statisticsResponse = await axios.get('/93AtHome/centerStatistics');
+    arraydata.value = convertArrayElements(statisticsResponse.data.dailyBytes);
 
     charts.value[0].subtitle = `每日流量分布 (${arraydata.value.targetUnit})`;
     charts.value[0].data = arraydata.value.converted;
     charts.value[0].unit = arraydata.value.targetUnit;
 
     charts.value[1].subtitle = `每日请求分布 (次)`;
-    charts.value[1].data = response.data.dailyHits;
+    charts.value[1].data = statisticsResponse.data.dailyHits;
     charts.value[1].unit = '次';
 
-    todayhits.value = response.data.today.hits;
-    todaybytes.value = formataBytes(response.data.today.bytes);
-    onlines.value = response.data.onlines;
+    todayhits.value = statisticsResponse.data.today.hits;
+    todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
+    onlines.value = statisticsResponse.data.onlines;
+
+    // 请求同步源数量
+    sourceCount.value = statisticsResponse.data.sourceCount;
   } catch (error) {
     console.error("Failed to get statistics:", error);
   }
