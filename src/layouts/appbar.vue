@@ -178,6 +178,11 @@ const showSwitchDialog = async () => {
 }
 
 const switchUser = async () => {
+    if (selectedUsers.value.length > 1) {
+        message("不能切换到多个用户！");
+        selectedUsers.value = [];
+        return;
+    }
     const selectedUser = selectedUsers.value.at(0);
     if (selectedUser) {
         try {
@@ -193,7 +198,7 @@ const switchUser = async () => {
             message(`请求失败: ${error.response.status}`);
         }
     } else {
-        message("请选择一个用户进行切换");
+        message("请选择一个用户进行切换！");
     }
 }
 
