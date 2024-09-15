@@ -5,7 +5,7 @@
                 <v-card>
                     <v-card-title>
                         <v-avatar v-if="source.imageExists" size="40" class="mr-3">
-                            <img :src="`/assets/sources/${source.name}.png`" alt="source image" />
+                            <img :src="`/assets/sources/${source.name}.png`" alt="source image" class="avatar-image" />
                         </v-avatar>
                         <span :class="{'headline': true, 'no-avatar': !source.imageExists}">
                             {{ source.name }}
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
 // 存储同步源信息的变量
@@ -70,6 +70,12 @@ onMounted(fetchSources);
 }
 .no-avatar {
     margin-left: 0;
+}
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 确保图片填充整个圆形区域 */
+    border-radius: 50%; /* 确保图片是圆形的 */
 }
 </style>
 
