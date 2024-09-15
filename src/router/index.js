@@ -6,7 +6,6 @@ export const router = createRouter({
   history: createWebHistory(),
   routes: setupLayouts(routes),
 })
-console.log(router.getRoutes())
 // This will update routes at runtime without reloading the page
 if (import.meta.hot) {
   handleHotUpdate(router)
