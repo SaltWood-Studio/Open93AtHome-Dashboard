@@ -40,8 +40,7 @@
     <v-navigation-drawer v-model="drawer" :permanent="$vuetify.display.mdAndUp" :clipped="$vuetify.display.mdAndUp">
         <v-list class="mt-10" density="compact" nav>
             <v-list-item :to="{ path: '/dashboard' }" exact prepend-icon="mdi-view-dashboard" title="总览"></v-list-item>
-            <v-list-item :to="{ path: '/dashboard/rank' }" exact prepend-icon="mdi-trophy-variant"
-                title="节点排行"></v-list-item>
+            <v-list-item :to="{ path: '/dashboard/rank' }" exact prepend-icon="mdi-trophy-variant" title="节点排行"></v-list-item>
             <v-list-item :to="{ path: '/dashboard/sources' }" exact prepend-icon="mdi-database" title="同步源"></v-list-item>
             <v-list-group v-if="isLoggedIn">
                 <template v-slot:activator="{ props }">
@@ -99,6 +98,14 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <!-- Snackbar -->
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000" bottom right>
+        {{ snackbar.message }}
+        <template v-slot:action="{ attrs }">
+            <v-btn text v-bind="attrs" @click="snackbar.show = false">关闭</v-btn>
+        </template>
+    </v-snackbar>
 </template>
 
 <script setup>
@@ -123,6 +130,12 @@ const headers = [
     { text: '权限等级', value: 'isSuperUser' },
 ];
 
+const snackbar = ref({
+    show: false,
+    message: '',
+    color: 'success'
+});
+
 const openDrawer = () => {
     drawer.value = !drawer.value;
 }
@@ -138,6 +151,7 @@ const getProfile = async () => {
     } catch (error) {
         isLoggedIn.value = false;
         Cookies.remove('token');
+        message("Failed to get profile");
         console.error("Failed to get profile:", error);
     }
 }
@@ -158,6 +172,7 @@ const showSwitchDialog = async () => {
         users.value = response.data;
         switchDialog.value = true;
     } catch (error) {
+        message("Failed to fetch users");
         console.error("Failed to fetch users:", error);
     }
 }
@@ -166,22 +181,27 @@ const switchUser = async () => {
     const selectedUser = selectedUsers.value.at(0);
     if (selectedUser) {
         try {
-            console.log("Switching to user:", selectedUser);
             const response = await axios.post('/93AtHome/super/sudo', { id: selectedUser });
             if (response.status === 200) {
-                alert("切换成功");
+                message("切换成功");
                 switchDialog.value = false;
-                // Refresh profile or handle successful switch
                 await getProfile();
             } else {
-                alert(`失败: ${response.status}`);
+                message(`失败: ${response.status}`);
             }
         } catch (error) {
-            alert(`请求失败: ${error.response.status}`);
+            message(`请求失败: ${error.response.status}`);
         }
     } else {
-        alert("请选择一个用户进行切换");
+        message("请选择一个用户进行切换");
     }
+}
+
+const message = (message) => {
+    snackbar.value = {
+        show: true,
+        message
+    };
 }
 
 onMounted(async () => {
