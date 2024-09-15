@@ -50,7 +50,7 @@
 
                 <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
-                <v-list-item v-if="isAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超级节点管理"></v-list-item>
+                <v-list-item v-if="isSuperAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超级节点管理"></v-list-item>
 
             </v-list-group>
 
@@ -110,7 +110,6 @@ import Cookies from 'js-cookie';
 const router = useRouter();
 const isLoggedIn = ref(false);
 const isSuperAdmin = ref(false);
-const isAdmin = ref(false);
 const userName = ref('未登录');
 const avatarUrl = ref('default_avatar.png');
 const drawer = ref(null);
@@ -135,8 +134,7 @@ const getProfile = async () => {
         avatarUrl.value = data.avatar_url;
         userName.value = data.login;
         isLoggedIn.value = true;
-        isSuperAdmin.value = data.is_super_admin;
-        isAdmin.value = data.is_super_admin; // Set isAdmin based on is_super_admin
+        isSuperAdmin.value = Cookies.get('adminToken') !== undefined;
     } catch (error) {
         isLoggedIn.value = false;
         Cookies.remove('token');
