@@ -25,6 +25,11 @@
                             登出
                         </v-btn>
 
+                        <!-- 切换按钮 -->
+                        <v-btn v-if="isSuperAdmin" small @click="showSwitchDialog">
+                            切换
+                        </v-btn>
+
                     </div>
                 </v-card-text>
             </v-card>
@@ -55,6 +60,45 @@
     <v-container fluid>
         <router-view></router-view>
     </v-container>
+
+    <!-- 切换用户对话框 -->
+    <v-dialog v-model="switchDialog" max-width="800">
+        <v-card>
+            <v-card-title>
+                <span class="headline">选择用户切换</span>
+            </v-card-title>
+            <v-card-subtitle>
+                <v-data-table
+                    :headers="headers"
+                    :items="users"
+                    item-key="id"
+                    show-select
+                    :items-per-page="5"
+                    class="elevation-1"
+                    v-model="selectedUsers"
+                >
+                    <template v-slot:item.photo="{ item }">
+                        <v-avatar size="40">
+                            <img
+                                :src=item.photo
+                                alt=item.username
+                            >
+                        </v-avatar>
+                    </template>
+                    <template v-slot:item.isSuperUser="{ item }">
+                        <v-chip :color="Number(item.isSuperUser) > 0 ? 'green' : 'red'" dark>
+                            {{ Number(item.isSuperUser) > 0 ? '管理' : '普通' }}
+                        </v-chip>
+                    </template>
+                </v-data-table>
+            </v-card-subtitle>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="switchUser" color="primary">切换</v-btn>
+                <v-btn @click="switchDialog = false">取消</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -65,10 +109,20 @@ import Cookies from 'js-cookie';
 
 const router = useRouter();
 const isLoggedIn = ref(false);
+const isSuperAdmin = ref(false);
 const isAdmin = ref(false);
 const userName = ref('未登录');
 const avatarUrl = ref('default_avatar.png');
 const drawer = ref(null);
+const switchDialog = ref(false);
+const users = ref([]);
+const selectedUsers = ref([]);
+const headers = [
+    { text: '头像', value: 'photo' },
+    { text: '用户名', value: 'username' },
+    { text: 'ID', value: 'id' },
+    { text: '权限等级', value: 'isSuperUser' },
+];
 
 const openDrawer = () => {
     drawer.value = !drawer.value;
@@ -77,8 +131,12 @@ const openDrawer = () => {
 const getProfile = async () => {
     try {
         const response = await axios.get('/93AtHome/dashboard/user/profile');
-        avatarUrl.value = response.data.avatar_url;
-        userName.value = response.data.login;
+        const data = response.data;
+        avatarUrl.value = data.avatar_url;
+        userName.value = data.login;
+        isLoggedIn.value = true;
+        isSuperAdmin.value = data.is_super_admin;
+        isAdmin.value = data.is_super_admin; // Set isAdmin based on is_super_admin
     } catch (error) {
         isLoggedIn.value = false;
         Cookies.remove('token');
@@ -92,17 +150,59 @@ const login = () => {
 
 const logout = () => {
     Cookies.remove('token');
+    Cookies.remove('adminToken');
     location.reload();
+}
+
+const showSwitchDialog = async () => {
+    try {
+        const response = await axios.get('/93AtHome/super/list_users');
+        users.value = response.data;
+        switchDialog.value = true;
+    } catch (error) {
+        console.error("Failed to fetch users:", error);
+    }
+}
+
+const switchUser = async () => {
+    const selectedUser = selectedUsers.value.at(0);
+    if (selectedUser) {
+        try {
+            console.log("Switching to user:", selectedUser);
+            const response = await axios.post('/93AtHome/super/sudo', { id: selectedUser });
+            if (response.status === 200) {
+                alert("切换成功");
+                switchDialog.value = false;
+                // Refresh profile or handle successful switch
+                await getProfile();
+            } else {
+                alert(`失败: ${response.status}`);
+            }
+        } catch (error) {
+            alert(`请求失败: ${error.response.status}`);
+        }
+    } else {
+        alert("请选择一个用户进行切换");
+    }
 }
 
 onMounted(async () => {
     if (Cookies.get('token')) {
-        isLoggedIn.value = true;
-        getProfile();
-        if (Cookies.get('adminToken')) {
-            isAdmin.value = true;
-        }
+        await getProfile();
     }
 })
-
 </script>
+
+<style scoped>
+.v-data-table {
+    max-width: 100%;
+}
+.v-avatar {
+    border-radius: 50%;
+}
+.v-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>
