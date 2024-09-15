@@ -49,7 +49,7 @@
 
                 <v-list-item :to="{ path: '/dashboard/clusters' }" title="我的节点"></v-list-item>
 
-                <v-list-item v-if="isSuperAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超级节点管理"></v-list-item>
+                <v-list-item v-if="isSuperAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超管面板"></v-list-item>
 
             </v-list-group>
 
