@@ -37,6 +37,10 @@
                     <v-btn class="ms-2" prepend-icon="mdi-paperclip-minus" @click="showInput = true" color="pink">
                         <span>解绑节点</span>
                     </v-btn>
+
+                    <v-btn class="ms-2" prepend-icon="mdi-lock-reset" @click="showResetDialog = true" color="red">
+                        <span>重置密钥</span>
+                    </v-btn>
                 </v-tabs-window-item>
 
                 <v-tabs-window-item key="1">
@@ -68,13 +72,30 @@
         <v-card prepend-icon="mdi-paperclip-minus" title="解绑节点">
             <v-card-text>
                 <p>您确定解绑此节点?</p>
-                <p>请在下方完整输入 {{ cluster.clusterId }} 以解绑</p>
+                <p>请在下方完整输入 <strong>{{ cluster.clusterId }}</strong> 以解绑</p>
 
                 <v-text-field class="mt-4" v-model="clusterId" label="ClusterId" required></v-text-field>
             </v-card-text>
             <v-card-actions>
                 <v-btn text @click="showInput = false">取消</v-btn>
                 <v-btn text @click="unbind">确认</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    <!-- 重置密钥的对话框 -->
+    <v-dialog v-model="showResetDialog" max-width="500px">
+        <v-card prepend-icon="mdi-lock-reset" title="重置密钥">
+            <v-card-text>
+                <p>您确定要重置密钥吗?</p>
+                <p>请<strong>务必关闭在线的节点</strong>再重置密钥，否则在节点在线时重置密钥<strong>可能会导致不可预料的后果！</strong></p>
+                <p>在下方完整输入节点名称 <strong>{{ cluster.clusterName }}</strong> 以确认操作</p>
+
+                <v-text-field class="mt-4" v-model="confirmName" label="节点名称" required></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn text @click="showResetDialog = false">取消</v-btn>
+                <v-btn text @click="resetSecret">确认</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -95,7 +116,9 @@ const modify = ref(false)
 const snackbar = ref(false)
 const modifytext = ref('')
 const showInput = ref(false)
+const showResetDialog = ref(false)
 const clusterId = ref('')
+const confirmName = ref('')
 
 const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt * 1000);
@@ -150,7 +173,7 @@ const modifyinf = async () => {
 };
 
 const unbind = async () => {
-    if (cluster.value.clusterId === clusterId) {
+    if (cluster.value.clusterId === clusterId.value) {
         try {
             const unbind = await axios.post('/93AtHome/dashboard/user/unbindCluster', {
                 clusterId: cluster.value.clusterId,
@@ -167,9 +190,31 @@ const unbind = async () => {
             showInput.value = false;
             console.error("Failed to modify cluster information:", error);
         }
-    }
-    else {
+    } else {
         modifytext.value = `clusterId 不一致`;
+        snackbar.value = true;
+    }
+}
+
+const resetSecret = async () => {
+    if (confirmName.value === cluster.value.clusterName) {
+        try {
+            const response = await axios.post('/93AtHome/dashboard/user/cluster/reset_secret', null, {
+                params: {
+                    clusterId: cluster.value.clusterId
+                }
+            });
+            modifytext.value = `重置成功! 新的密钥: ${response.data.clusterSecret}`;
+            snackbar.value = true;
+            showResetDialog.value = false;
+        } catch (error) {
+            modifytext.value = `重置密钥失败: ${error}`;
+            snackbar.value = true;
+            showResetDialog.value = false;
+            console.error("Failed to reset secret:", error);
+        }
+    } else {
+        modifytext.value = `节点名称不匹配`;
         snackbar.value = true;
     }
 }
