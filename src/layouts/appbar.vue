@@ -200,6 +200,7 @@ const switchUser = async () => {
     } else {
         message("请选择一个用户进行切换！");
     }
+  selectedUsers.value = [];
 }
 
 const message = (message) => {
