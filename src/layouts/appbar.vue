@@ -1,7 +1,7 @@
 <template>
     <v-app-bar color="primary" app>
         <v-app-bar-nav-icon @click="openDrawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>93Home-Dash</v-toolbar-title>
+        <v-toolbar-title>93@Home-Dash</v-toolbar-title>
         <v-spacer></v-spacer>
 
         <template v-slot:append>
