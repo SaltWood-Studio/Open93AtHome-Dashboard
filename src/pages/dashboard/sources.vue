@@ -71,9 +71,9 @@
       </v-card>
     </v-dialog>
 
-    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+    <v-snackbar v-model="snackbar" :timeout="3000">
       {{ snackbarMessage }}
-      <v-btn color="white" text @click="snackbar = false">关闭</v-btn>
+      <v-btn text @click="snackbar = false">关闭</v-btn>
     </v-snackbar>
   </v-container>
 </template>
@@ -89,7 +89,6 @@ const error = ref(""); // 错误信息
 const showDialog = ref(false); // 控制更新确认对话框的显示
 const snackbar = ref(false); // 控制Snackbar的显示
 const snackbarMessage = ref(""); // Snackbar消息
-const snackbarTimeout = ref(3000); // Snackbar的显示时间
 
 // 格式化日期函数
 const formatDate = (dateString) => {
@@ -142,7 +141,7 @@ const updateFiles = async () => {
 
     // 根据不同的返回状态进行处理
     if (response.status === 204) {
-      snackbarMessage.value = "文件更新成功！";
+      snackbarMessage.value = "开始更新文件！";
     } else if (response.status === 409) {
       snackbarMessage.value = "文件更新已在进行中，请稍后重试。";
     } else {
