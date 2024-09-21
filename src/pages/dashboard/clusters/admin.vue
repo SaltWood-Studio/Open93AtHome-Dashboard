@@ -117,14 +117,14 @@
     </v-dialog>
 
     <!-- 新的修改分片对话框 -->
-    <v-dialog v-model="shardsDialog" max-width="400px" max-height="300px">
+    <v-dialog v-model="shardsDialog" max-width="800px" max-height="400px">
         <v-card>
             <v-card-title>
                 <span class="headline">修改分片</span>
             </v-card-title>
             <v-card-text>
-                <v-row>
-                    <v-col v-for="(bit, index) in 32" :key="index" cols="3">
+                <v-row no-gutters="true">
+                    <v-col v-for="(bit, index) in 32" :key="index" cols="1">
                         <v-checkbox v-model="shards[index]" :label="index.toString().padStart(2, '0')" />
                     </v-col>
                 </v-row>
