@@ -12,7 +12,7 @@
         />
       </v-col>
       <v-col cols="1" class="d-flex justify-end align-center">
-        <v-btn color="primary" large @click="showDialog = true" class="large-btn">
+        <v-btn color="primary" large @click="showDialog = true" class="btn">
           <v-icon left>mdi-refresh</v-icon> 更新文件
         </v-btn>
       </v-col>
@@ -73,7 +73,11 @@
 
     <v-snackbar v-model="snackbar" :timeout="3000">
       {{ snackbarMessage }}
-      <v-btn text @click="snackbar = false">关闭</v-btn>
+      <template v-slot:actions>
+            <v-btn color="primary" variant="text" @click="snackbar = false">
+                关闭
+            </v-btn>
+        </template>
     </v-snackbar>
   </v-container>
 </template>

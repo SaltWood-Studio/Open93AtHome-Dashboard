@@ -59,7 +59,7 @@
         </v-card-text>
     </v-card>
 
-    <v-snackbar v-model="snackbar">
+    <v-snackbar v-model="snackbar" timeout="6000">
         {{ modifytext }}
         <template v-slot:actions>
             <v-btn color="primary" variant="text" @click="snackbar = false">
@@ -79,6 +79,19 @@
             <v-card-actions>
                 <v-btn text @click="showInput = false">取消</v-btn>
                 <v-btn text @click="unbind">确认</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="showNewSecret" max-width="500px">
+        <v-card prepend-icon="mdi-paperclip-minus" title="重置密钥">
+            <v-card-text>
+                <p>成功重置密钥！</p>
+                <p>牢记您的新密钥: <strong>{{ newSecret }}</strong></p>
+                <p>请妥善保管您的密钥，切勿透露给他人！</p>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn text @click="showNewSecret = false; newSecret = ''">确认</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -117,8 +130,10 @@ const snackbar = ref(false)
 const modifytext = ref('')
 const showInput = ref(false)
 const showResetDialog = ref(false)
+const showNewSecret = ref(false)
 const clusterId = ref('')
 const confirmName = ref('')
+const newSecret = ref('')
 
 const formatCreatedAt = (createdAt) => {
     const date = new Date(createdAt * 1000);
@@ -204,9 +219,10 @@ const resetSecret = async () => {
                     clusterId: cluster.value.clusterId
                 }
             });
-            modifytext.value = `重置成功! 新的密钥: ${response.data.clusterSecret}`;
-            snackbar.value = true;
+            modifytext.value = "成功重置密钥";
             showResetDialog.value = false;
+            newSecret.value = response.data.clusterSecret;
+            showNewSecret.value = true;
         } catch (error) {
             modifytext.value = `重置密钥失败: ${error}`;
             snackbar.value = true;
