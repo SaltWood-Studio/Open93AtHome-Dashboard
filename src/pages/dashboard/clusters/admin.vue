@@ -117,7 +117,7 @@
     </v-dialog>
 
     <!-- 新的修改分片对话框 -->
-    <v-dialog v-model="shardsDialog" max-width="600px">
+    <v-dialog v-model="shardsDialog" max-width="400px" max-height="300px">
         <v-card>
             <v-card-title>
                 <span class="headline">修改分片</span>
@@ -373,6 +373,16 @@ const confirmShards = async () => {
             console.error("Failed to modify shards:", error);
         }
     }
+}
+
+// 将布尔数组转换为整数（BigInt）
+const booleansToInt = (bits) => {
+    return bits.reduce((acc, bit, index) => {
+        if (bit) {
+            acc |= (1 << index); // 设置第 index 位为 1
+        }
+        return acc;
+    }, 0);
 }
 
 onMounted(async () => {
