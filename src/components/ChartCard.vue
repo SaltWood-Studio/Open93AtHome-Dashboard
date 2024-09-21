@@ -42,11 +42,11 @@ const initChart = () => {
     const myChart = echarts.init(chartRef.value);
 
     const today = new Date();
-    const dates = Array.from({ length: 29 }, (_, i) => {
+    const dates = Array.from({ length: 15 }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${day}号`;
+      const day = date.getDate().toString();
+      return `${day}日`;
     });
 
     const option = {
