@@ -13,6 +13,12 @@
             <template v-slot:item.sponsor="{ item }">
               <a :href="item.sponsorUrl">{{ item.sponsor }}</a>
             </template>
+            <template v-slot:item.fullsize="{ item }">
+              <v-chip :color="item.fullsize ? 'cyan' : 'orange'"
+                :prepend-icon="item.fullsize ? 'mdi-database' : 'mdi-database-outline'" label>
+                {{ item.fullsize ? '全量' : '分片' }}
+              </v-chip>
+            </template>
             <template v-slot:item.isOnline="{ item }">
               <v-chip :color="item.isBanned ? 'shades' : (item.isOnline ? 'green' : 'red')"
                 :prepend-icon="item.isBanned ? 'mdi-cancel' : (item.isOnline ? 'mdi-check' : 'mdi-close')" label>
@@ -38,7 +44,8 @@ const headers = ref([
   { title: '流量', value: 'bytes' },
   { title: '节点拥有者', value: 'ownerName' },
   { title: '节点赞助商', value: 'sponsor' },
-  { title: '在线状态', value: 'isOnline' },
+  { title: '节点类型', value: 'fullsize' },
+  { title: '在线状态', value: 'isOnline' }
 ]);
 
 const items = ref([]);
@@ -64,6 +71,7 @@ onMounted(async () => {
       ownerName: item.ownerName,
       isOnline: item.isOnline,
       isBanned: item.isBanned,
+      fullsize: item.fullsize
     }));
   } catch (error) {
     console.error('Failed to fetch data:', error);
