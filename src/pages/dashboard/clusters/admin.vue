@@ -20,6 +20,11 @@
         <span>修改节点</span>
     </v-btn>
 
+    <!-- 新的修改分片按钮 -->
+    <v-btn class="ms-2" prepend-icon="mdi-database" :disabled="!canEdit" @click="openShardsDialog" color="pink">
+        <span>修改分片</span>
+    </v-btn>
+
     <v-snackbar v-model="snackbar">
         {{ modifytext }}
         <template v-slot:actions>
@@ -110,6 +115,26 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <!-- 新的修改分片对话框 -->
+    <v-dialog v-model="shardsDialog" max-width="600px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">修改分片</span>
+            </v-card-title>
+            <v-card-text>
+                <v-row>
+                    <v-col v-for="(bit, index) in 32" :key="index" cols="3">
+                        <v-checkbox v-model="shards[index]" :label="index.toString().padStart(2, '0')" />
+                    </v-col>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="shardsDialog = false" color="grey" text>取消</v-btn>
+                <v-btn @click="confirmShards" color="primary">确认</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -122,6 +147,7 @@ const snackbar = ref(false);
 const modifytext = ref('');
 const createDialog = ref(false);
 const editDialog = ref(false);
+const shardsDialog = ref(false);
 const showInfoDialog = ref(false);
 
 const newClusterName = ref('');
@@ -134,6 +160,8 @@ const editSponsorUrl = ref('');
 
 const newClusterId = ref('');
 const newClusterSecret = ref('');
+
+const shards = ref(new Array(32).fill(false)); // 32个复选框的状态
 
 const canEdit = computed(() => selected.value.length === 1);
 
@@ -210,21 +238,14 @@ const update = async () => {
                 sponsor: editSponsor.value || undefined,
                 sponsorUrl: editSponsorUrl.value || undefined
             };
-            
-
-            // Remove undefined fields from the request body
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
             await axios.post('/93AtHome/super/cluster/profile', requestBody, {
                 params: { clusterId }
             });
 
-            // 刷新节点列表
             await getlist();
-
-            // 取消所有选中项
             selected.value = [];
-
             editDialog.value = false;
             editClusterName.value = '';
             editBandwidth.value = null;
@@ -313,18 +334,44 @@ const remove = async () => {
             });
         }
 
-        // 刷新节点列表
         await getlist();
-
-        // 取消所有选中项
         selected.value = [];
-
         modifytext.value = "成功删除节点";
         snackbar.value = true;
     } catch (error) {
         modifytext.value = `删除失败: ${error}`;
         snackbar.value = true;
         console.error("Failed to remove cluster:", error);
+    }
+}
+
+// 打开分片对话框
+const openShardsDialog = () => {
+    if (selected.value.length === 1) {
+        shards.value.fill(false);  // 重置复选框状态
+        shardsDialog.value = true;
+    }
+};
+
+// 确认修改分片
+const confirmShards = async () => {
+    if (selected.value.length === 1) {
+        const clusterId = selected.value[0];
+        try {
+            const shardsValue = booleansToInt(shards.value);  // 将布尔数组转换为整数
+            await axios.post('/93AtHome/super/modify_shards', { shards: shardsValue }, {
+                params: { clusterId }
+            });
+
+            modifytext.value = "成功修改分片";
+            snackbar.value = true;
+            shardsDialog.value = false;  // 关闭对话框
+
+        } catch (error) {
+            modifytext.value = `修改分片失败: ${error}`;
+            snackbar.value = true;
+            console.error("Failed to modify shards:", error);
+        }
     }
 }
 
