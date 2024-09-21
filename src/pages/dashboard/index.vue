@@ -27,6 +27,18 @@
               {{ sourceCount }} 个
             </v-card-text>
           </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">总文件数</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ totalFiles }} 个
+            </v-card-text>
+          </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">总文件大小</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ totalSize }}
+            </v-card-text>
+          </v-col>
         </v-row>
       </v-card>
     </v-col>
@@ -44,14 +56,17 @@ import ChartCard from '@/components/ChartCard.vue';
 import axios from 'axios';
 
 const charts = ref([
-  { title: '全网流量', subtitle: '', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], unit: '' },
-  { title: '全网请求数', subtitle: '', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], unit: '' },
+  { title: '全网流量', subtitle: '', data: Array(15).fill(0), unit: '' },
+  { title: '全网请求数', subtitle: '', data: Array(15).fill(0), unit: '' },
 ]);
+
 const todayhits = ref('');
 const todaybytes = ref('');
 const arraydata = ref({});
 const onlines = ref('');
 const sourceCount = ref('');
+const totalFiles = ref('');
+const totalSize = ref('');
 
 const formataBytes = (bytes) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -76,10 +91,7 @@ function convertArrayElements(array) {
     return (byteValue / Math.pow(1024, maxIndex)).toFixed(2);
   });
 
-  return {
-    converted: convertedArray,
-    targetUnit: targetUnit
-  };
+  return { converted: convertedArray, targetUnit };
 }
 
 const getstatistics = async () => {
@@ -98,9 +110,11 @@ const getstatistics = async () => {
     todayhits.value = statisticsResponse.data.today.hits;
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
     onlines.value = statisticsResponse.data.onlines;
-
-    // 请求同步源数量
     sourceCount.value = statisticsResponse.data.sourceCount;
+
+    // 新增总文件数和总文件大小
+    totalFiles.value = statisticsResponse.data.totalFiles;
+    totalSize.value = formataBytes(statisticsResponse.data.totalSize);
   } catch (error) {
     console.error("Failed to get statistics:", error);
   }
