@@ -1,5 +1,5 @@
 <template>
-  <v-card height="460px">
+  <v-card height="520px">
     <v-card-title
       :class="{ 'font-weight-black red-bg white-text': !isOnline, 'font-weight-black green-bg white-text': isOnline }">
       <v-row align="center" no-gutters>
@@ -28,6 +28,20 @@
 
           <v-divider></v-divider>
 
+          <v-row align="center" justify="space-between" class="mt-4">
+            <v-col>
+              <span class="node-type">节点类型</span>
+            </v-col>
+            <v-col class="text-right">
+              <v-chip
+                :class="fullsize ? 'blue-border blue-bg white-text' : 'blue-border white-bg blue-text'"
+                :style="{ marginLeft: 'auto' }"
+              >
+                <strong>{{ fullsize ? '全量' : '分片' }}</strong>
+              </v-chip>
+            </v-col>
+          </v-row>
+
           <v-text-field class="mt-5" label="创建日期" :model-value="createdAt" readonly></v-text-field>
 
         </v-tabs-window-item>
@@ -43,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -77,6 +91,10 @@ const props = defineProps({
     required: true,
   },
   sponsorUrl: {
+    type: String,
+    required: true,
+  },
+  fullsize: {
     type: Boolean,
     required: true,
   }
@@ -102,5 +120,26 @@ const toCluster = () => {
 
 .white-text {
   color: white;
+}
+
+.blue-border {
+  border: 1px solid rgb(51, 102, 255);
+}
+
+.blue-bg {
+  background-color: rgb(51, 102, 255);
+}
+
+.white-bg {
+  background-color: white;
+}
+
+.blue-text {
+  color: rgb(51, 102, 255);
+}
+
+.node-type {
+  font-size: 1.2em; /* 调整字体大小 */
+  margin-right: 16px; /* 向右移动 */
 }
 </style>

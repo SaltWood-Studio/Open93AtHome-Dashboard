@@ -3,11 +3,11 @@
     <v-col cols="12" md="8" lg="4" v-for="(card, index) in cards" :key="index">
       <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint"
         :bandwidth="card.bandwidth" :createdAt="card.createdAt" :isOnline="card.isOnline" :sponsor="card.sponsor"
-        :sponsorUrl="card.sponsorUrl" />
+        :sponsorUrl="card.sponsorUrl" :fullsize="card.fullsize"/>
     </v-col>
 
     <v-col cols="12" md="8" lg="4">
-      <v-card height="460px">
+      <v-card height="520px">
         <v-container fluid class="d-flex justify-center align-center" style="height: 100%;">
           <v-card width="95%" height="95%" class="text-center" style="display: flex; 
               align-items: center; 
@@ -157,6 +157,7 @@ const getclusters = async () => {
       bandwidth: item.bandwidth,
       createdAt: formatCreatedAt(item.createdAt),
       isOnline: item.isOnline,
+      fullsize: item.fullsize,
       sponsor: item.sponsor,
       sponsorUrl: item.sponsorUrl,
     }));
