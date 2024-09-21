@@ -1,6 +1,6 @@
 <div align="center">
 
-![93Home-Dash](https://socialify.git.ci/Mxmilu666/93Home-Dash/image?description=1&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
+![93Home-Dash](https://socialify.git.ci/SaltWood-Studio/Open93AtHome-Dashboard/image?description=1&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # 93Home-Dash 
 ✨ 一个 93@Home 的 DashBoard 基于 Vue + Vuetify ✨
