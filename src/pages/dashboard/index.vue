@@ -55,9 +55,11 @@ import { onMounted, ref } from 'vue';
 import ChartCard from '@/components/ChartCard.vue';
 import axios from 'axios';
 
+const elements = 15;
+
 const charts = ref([
-  { title: '全网流量', subtitle: '', data: Array(15).fill(0), unit: '' },
-  { title: '全网请求数', subtitle: '', data: Array(15).fill(0), unit: '' },
+  { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '' },
+  { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '' },
 ]);
 
 const todayhits = ref('');
@@ -97,14 +99,15 @@ function convertArrayElements(array) {
 const getstatistics = async () => {
   try {
     const statisticsResponse = await axios.get('/93AtHome/centerStatistics');
-    arraydata.value = convertArrayElements(statisticsResponse.data.dailyBytes);
+    arraydata.value = convertArrayElements(statisticsResponse.data.dailyBytes.slice(0, elements));
 
     charts.value[0].subtitle = `每日流量分布 (${arraydata.value.targetUnit})`;
     charts.value[0].data = arraydata.value.converted;
     charts.value[0].unit = arraydata.value.targetUnit;
 
     charts.value[1].subtitle = `每日请求分布 (次)`;
-    charts.value[1].data = statisticsResponse.data.dailyHits;
+    charts.value[1].data = statisticsResponse.data.dailyHits.slice(0, elements);
+    
     charts.value[1].unit = '次';
 
     todayhits.value = statisticsResponse.data.today.hits;
