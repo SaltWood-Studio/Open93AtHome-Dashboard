@@ -107,7 +107,7 @@ const openDialog = async (clusterId) => {
     const cluster = items.value.find(item => item.id === clusterId);
     selectedClusterTitle.value = cluster.name;
     dialog.value = true;
-    xAxisData.value = response.data.map(item => item.date.split('-').at(-1).trim('0'));
+    xAxisData.value = response.data.map(item => item.date.split('-').at(-1).replace(/^0+/, ''));
   } catch (error) {
     console.error('Failed to fetch cluster statistics:', error);
   }
