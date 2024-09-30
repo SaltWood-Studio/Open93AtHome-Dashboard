@@ -34,7 +34,7 @@
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
-  <v-dialog v-model="dialog" max-width="1200px" max-height="650px" @click:outside="closeDialog">
+  <v-dialog v-model="dialog" max-width="1000px" @click:outside="closeDialog">
     <v-card>
       <v-card-title class="font-weight-black">统计数据</v-card-title>
       <v-divider></v-divider>
