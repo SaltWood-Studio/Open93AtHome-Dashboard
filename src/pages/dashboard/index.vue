@@ -46,6 +46,9 @@
       <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chartData="chart.data"
         :chartunit="chart.unit" />
     </v-col>
+    <v-col cols="12" md="6" lg="6" v-for="(chart, index) in doubleCharts" :key="index">
+      <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" />
+    </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
@@ -54,12 +57,17 @@
 import { onMounted, ref } from 'vue';
 import ChartCard from '@/components/ChartCard.vue';
 import axios from 'axios';
+import DoubleChartCard from '@/components/DoubleChartCard.vue';
 
 const elements = 15;
 
 const charts = ref([
   { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '' },
   { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '' },
+]);
+
+const doubleCharts = ref([
+  { title: '全网流量', data: Array(24).fill(0), units: [] },
 ]);
 
 const todayhits = ref('');
@@ -100,6 +108,7 @@ const getstatistics = async () => {
   try {
     const statisticsResponse = await axios.get('/93AtHome/centerStatistics');
     arraydata.value = convertArrayElements(statisticsResponse.data.dailyBytes.slice(0, elements));
+    const hourlyData = convertArrayElements(statisticsResponse.data.hourly.slice(0, 24).map(hour => hour[1]));
 
     charts.value[0].subtitle = `每日流量分布 (${arraydata.value.targetUnit})`;
     charts.value[0].data = arraydata.value.converted;
@@ -109,6 +118,10 @@ const getstatistics = async () => {
     charts.value[1].data = statisticsResponse.data.dailyHits.slice(0, elements);
     
     charts.value[1].unit = '次';
+
+    doubleCharts.value[0].data = statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]]));
+    console.log(statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]])));
+    doubleCharts.value[0].units = ['次', hourlyData.targetUnit];
 
     todayhits.value = statisticsResponse.data.today.hits;
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
