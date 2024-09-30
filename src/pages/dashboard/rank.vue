@@ -25,17 +25,34 @@
                 {{ item.isBanned ? '封禁' : (item.isOnline ? '在线' : '离线') }}
               </v-chip>
             </template>
+            <template v-slot:item.action="{ item }">
+              <v-btn @click="openDialog(item.id)" color="primary" small>查看统计</v-btn>
+            </template>
           </v-data-table>
         </v-card-text>
       </v-card>
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
+  <v-dialog v-model="dialog" max-width="1000px" @click:outside="closeDialog">
+    <v-card>
+      <v-card-title class="font-weight-black">统计数据</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text>
+        <DoubleChartCard v-if="selectedClusterData" :title="selectedClusterTitle" :units="['请求数', '流量']" :data="selectedClusterData" :x-axis="xAxisData"/>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" @click="closeDialog">关闭</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import DoubleChartCard from '@/components/DoubleChartCard.vue';
 
 const headers = ref([
   { title: '节点名次', value: 'rank' },
@@ -45,10 +62,15 @@ const headers = ref([
   { title: '节点拥有者', value: 'ownerName' },
   { title: '节点赞助商', value: 'sponsor' },
   { title: '节点类型', value: 'fullsize' },
-  { title: '在线状态', value: 'isOnline' }
+  { title: '在线状态', value: 'isOnline' },
+  { title: '操作', value: 'action', sortable: false } // 添加操作列
 ]);
 
 const items = ref([]);
+const dialog = ref(false);  // 控制弹出窗口的显示与隐藏
+const selectedClusterData = ref(null);  // 用于存储点击后的统计数据
+const selectedClusterTitle = ref('');  // 用于显示点击的节点名称
+const xAxisData = ref([]);  // 用于双图表的 x 轴数据
 
 const formatBytes = (bytes) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -77,6 +99,23 @@ onMounted(async () => {
     console.error('Failed to fetch data:', error);
   }
 });
+
+const openDialog = async (clusterId) => {
+  try {
+    const response = await axios.get(`/93AtHome/clusterStatistics?clusterId=${clusterId}`);
+    selectedClusterData.value = response.data.map(item => [item.hits, formatBytes(item.bytes)]);
+    const cluster = items.value.find(item => item.id === clusterId);
+    selectedClusterTitle.value = cluster.name;
+    dialog.value = true;
+    xAxisData.value = response.data.map(item => item.date.split('-').at(-1).trim('0'));
+  } catch (error) {
+    console.error('Failed to fetch cluster statistics:', error);
+  }
+};
+
+const closeDialog = () => {
+  dialog.value = false;
+};
 </script>
 
 <route lang="yaml">

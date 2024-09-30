@@ -25,15 +25,21 @@ const props = defineProps({
     type: Array, // 数据格式为 [[值1_1, 值1_2], [值2_1, 值2_2], ...]
     required: true,
   },
+  xAxis: {
+    type: Array, // X轴数据，如 ['0时', '1时', '2时', ...]
+    required: false,
+    default: Array.from({ length: 24 }, (_, i) => `${i}时`)
+  }
 });
 
 const chartRef = ref(null);
+const xAxis = ref(props.xAxis);
 
 const initChart = () => {
     if (chartRef.value) {
         const myChart = echarts.init(chartRef.value);
   
-        const xAxisData = Array.from({ length: 24 }, (_, i) => `${i}时`); // X轴为0时到23时
+        const xAxisData = xAxis.value; // X轴为0时到23时
   
         const option = {
             tooltip: {
