@@ -47,7 +47,7 @@ const initChart = () => {
       date.setDate(today.getDate() - i);
       const day = date.getDate().toString();
       return `${day}日`;
-    });
+    }).reverse();
 
     const option = {
       title: {
@@ -69,7 +69,7 @@ const initChart = () => {
       },
       series: [
         {
-          data: props.chartData,
+          data: props.chartData.reverse(),
           type: 'line',
           smooth: true,
         },
