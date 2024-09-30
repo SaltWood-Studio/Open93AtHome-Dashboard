@@ -11,6 +11,9 @@
     <v-btn class="ms-2" prepend-icon="mdi-delete" @click="remove" color="pink">
         <span>批量删除</span>
     </v-btn>
+    <v-btn class="ms-2" prepend-icon="mdi-arrow-down" @click="kick" color="pink">
+        <span>批量下线</span>
+    </v-btn>
 
     <v-btn class="ms-2" prepend-icon="mdi-plus" @click="openCreateDialog" color="pink">
         <span>新建节点</span>
@@ -374,6 +377,26 @@ const confirmShards = async () => {
         }
     }
 }
+
+const kick = async () => {
+    const clusterIdsToKick = selected.value;
+
+    try {
+        for (const clusterId of clusterIdsToKick) {
+            await axios.post(`/93AtHome/super/cluster/kick`, null, {
+                params: { clusterId }
+            });
+        }
+
+        modifytext.value = "成功下线节点";
+        snackbar.value = true;
+        await getlist();  // 刷新列表
+    } catch (error) {
+        modifytext.value = `下线失败: ${error}`;
+        snackbar.value = true;
+        console.error("Failed to kick cluster:", error);
+    }
+};
 
 // 将布尔数组转换为整数（BigInt）
 const booleansToInt = (bits) => {
