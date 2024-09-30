@@ -67,7 +67,7 @@ const charts = ref([
 ]);
 
 const doubleCharts = ref([
-  { title: '全网流量', data: Array(24).fill(0), units: [] },
+  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [] },
 ]);
 
 const todayhits = ref('');
