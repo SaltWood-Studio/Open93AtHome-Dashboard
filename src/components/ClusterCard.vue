@@ -134,6 +134,10 @@ const toCluster = () => {
   background-color: rgb(51, 102, 255);
 }
 
+.grey-bg {
+  background-color: rgb(48, 48, 48);
+}
+
 .white-bg {
   background-color: white;
 }
