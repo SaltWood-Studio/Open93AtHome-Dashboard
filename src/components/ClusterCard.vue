@@ -86,6 +86,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  isBanned: {
+    type: Boolean,
+    required: true,
+  },
   sponsor: {
     type: Boolean,
     required: true,

@@ -2,8 +2,8 @@
   <v-row>
     <v-col cols="12" md="8" lg="4" v-for="(card, index) in cards" :key="index">
       <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint"
-        :bandwidth="card.bandwidth" :createdAt="card.createdAt" :isOnline="card.isOnline" :sponsor="card.sponsor"
-        :sponsorUrl="card.sponsorUrl" :fullsize="card.fullsize"/>
+        :bandwidth="card.bandwidth" :createdAt="card.createdAt" :isOnline="card.isOnline" :isBanned="card.isBanned"
+        :sponsor="card.sponsor" :sponsorUrl="card.sponsorUrl" :fullsize="card.fullsize"/>
     </v-col>
 
     <v-col cols="12" md="8" lg="4">
