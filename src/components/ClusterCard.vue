@@ -1,7 +1,7 @@
 <template>
   <v-card height="520px">
     <v-card-title
-      :class="{ 'font-weight-black red-bg white-text': !isOnline, 'font-weight-black green-bg white-text': isOnline }">
+      :class="{ 'font-weight-black grey-bg white-text': isBanned, 'font-weight-black red-bg white-text': !isOnline && !isBanned, 'font-weight-black green-bg white-text': isOnline && !isBanned}">
       <v-row align="center" no-gutters>
         <v-col>
           <span>{{ clusterName }}</span>
