@@ -8,7 +8,7 @@
     <v-btn class="ms-2" prepend-icon="mdi-check" @click="unban" color="pink">
         <span>批量解封</span>
     </v-btn>
-    <v-btn class="ms-2" prepend-icon="mdi-delete" @click="remove" color="pink">
+    <v-btn class="ms-2" prepend-icon="mdi-delete" @click="openRemoveDialog" color="pink">
         <span>批量删除</span>
     </v-btn>
     <v-btn class="ms-2" prepend-icon="mdi-arrow-down" @click="kick" color="pink">
@@ -138,6 +138,22 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <!-- 新增的删除确认对话框 -->
+    <v-dialog v-model="removeDialog" max-width="400px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">确认删除</span>
+            </v-card-title>
+            <v-card-text>
+                <span style="font-weight: bold;">您确定要删除所选节点吗？</span>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="removeClusters" color="grey" text>确认</v-btn>
+                <v-btn @click="removeDialog = false" color="red" text>取消</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
@@ -152,6 +168,7 @@ const createDialog = ref(false);
 const editDialog = ref(false);
 const shardsDialog = ref(false);
 const showInfoDialog = ref(false);
+const removeDialog = ref(false);
 
 const newClusterName = ref('');
 const newBandwidth = ref(null);
@@ -327,27 +344,6 @@ const unban = async () => {
     }
 };
 
-const remove = async () => {
-    const clusterIdsToRemove = selected.value;
-
-    try {
-        for (const clusterId of clusterIdsToRemove) {
-            await axios.post('/93AtHome/super/cluster/remove', {
-                clusterId: clusterId
-            });
-        }
-
-        await getlist();
-        selected.value = [];
-        modifytext.value = "成功删除节点";
-        snackbar.value = true;
-    } catch (error) {
-        modifytext.value = `删除失败: ${error}`;
-        snackbar.value = true;
-        console.error("Failed to remove cluster:", error);
-    }
-}
-
 // 打开分片对话框
 const openShardsDialog = () => {
     if (selected.value.length === 1) {
@@ -406,6 +402,28 @@ const booleansToInt = (bits) => {
         }
         return acc;
     }, 0);
+}
+
+const openRemoveDialog = () => {
+    removeDialog.value = true;  // 打开删除确认对话框
+}
+
+const removeClusters = async () => {
+    try {
+        await axios.post('/93AtHome/super/cluster/remove', {
+            clusterIds: selected.value
+        });
+        modifytext.value = "成功删除节点";
+        snackbar.value = true;
+        removeDialog.value = false;
+
+        // 刷新节点列表
+        await getlist();
+    } catch (error) {
+        modifytext.value = `删除失败: ${error}`;
+        snackbar.value = true;
+        console.error("Failed to remove clusters:", error);
+    }
 }
 
 onMounted(async () => {
