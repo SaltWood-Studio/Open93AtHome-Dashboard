@@ -157,6 +157,7 @@ const getclusters = async () => {
       bandwidth: item.bandwidth,
       createdAt: formatCreatedAt(item.createdAt),
       isOnline: item.isOnline,
+      isBanned: item.isBanned,
       fullsize: item.fullsize,
       sponsor: item.sponsor,
       sponsorUrl: item.sponsorUrl,
