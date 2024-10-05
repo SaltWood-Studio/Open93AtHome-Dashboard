@@ -1,6 +1,19 @@
 <template>
     <h2>超级管理员节点管理</h2>
-    <v-data-table v-model="selected" :items="items" item-value="clusterId" show-select></v-data-table>
+    <v-data-table v-model="selected" :items="items" item-value="clusterId" show-select>
+        <template v-slot:item.fullsize="{ item }">
+            <v-chip :color="item.fullsize ? 'cyan' : 'orange'"
+                :prepend-icon="item.fullsize ? 'mdi-database' : 'mdi-database-outline'" label>
+                {{ item.fullsize ? '全量' : '分片' }}
+            </v-chip>
+        </template>
+        <template v-slot:item.isBanned="{ item }">
+            <v-chip :color="item.isBanned ? 'shades' : 'green'"
+                :prepend-icon="item.isBanned ? 'mdi-cancel' : 'mdi-check'" label>
+                {{ item.isBanned ? '封禁' : '正常' }}
+            </v-chip>
+        </template>
+    </v-data-table>
 
     <v-btn prepend-icon="mdi-cancel" @click="ban" color="pink">
         <span>批量封禁</span>
@@ -192,7 +205,8 @@ const getlist = async () => {
             clusterId: item.clusterId,
             clusterName: item.clusterName,
             bandwidth: item.bandwidth,
-            isBanned: item.isBanned,
+            fullsize: item.fullsize,
+            isBanned: item.isBanned
         }));
     } catch (error) {
         console.error('Failed to fetch data:', error);
