@@ -39,6 +39,12 @@
               {{ totalSize }}
             </v-card-text>
           </v-col>
+          <v-col>
+            <v-card-title class="font-weight-black text-h6">主控在线时间</v-card-title>
+            <v-card-text class="font-weight-black text-h5">
+              {{ uptime }}
+            </v-card-text>
+          </v-col>
         </v-row>
       </v-card>
     </v-col>
@@ -60,6 +66,7 @@ import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
 
 const elements = 15;
+const uptime = ref('');
 
 const charts = ref([
   { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '' },
@@ -104,6 +111,20 @@ function convertArrayElements(array) {
   return { converted: convertedArray, targetUnit };
 }
 
+const formatDuration = (startTime) => {
+    const now = Date.now();
+    const duration = now - startTime;
+    const seconds = Math.floor(duration / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const remainingHours = hours % 24;
+    const remainingMinutes = minutes % 60;
+    const remainingSeconds = seconds % 60;
+    
+    return `${days} 天 ${remainingHours} 小时 ${remainingMinutes} 分钟 ${remainingSeconds} 秒`;
+}
+
 const getstatistics = async () => {
   try {
     const statisticsResponse = await axios.get('/93AtHome/centerStatistics');
@@ -127,6 +148,11 @@ const getstatistics = async () => {
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
     onlines.value = statisticsResponse.data.onlines;
     sourceCount.value = statisticsResponse.data.sourceCount;
+    const startTime = statisticsResponse.data.startTime;
+    uptime.value = formatDuration(startTime);
+    setInterval(() => {
+      uptime.value = formatDuration(startTime);
+    }, 1000);
 
     // 新增总文件数和总文件大小
     totalFiles.value = statisticsResponse.data.totalFiles;
