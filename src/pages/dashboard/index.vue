@@ -122,7 +122,7 @@ const formatDuration = (startTime) => {
     const remainingMinutes = minutes % 60;
     const remainingSeconds = seconds % 60;
     
-    return `${days} 天 ${remainingHours} 小时 ${remainingMinutes} 分钟 ${remainingSeconds} 秒`;
+    return `${days}:${remainingHours}:${remainingMinutes}:${remainingSeconds}`;
 }
 
 const getstatistics = async () => {
