@@ -148,7 +148,7 @@ const getstatistics = async () => {
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
     onlines.value = statisticsResponse.data.onlines;
     sourceCount.value = statisticsResponse.data.sourceCount;
-    const startTime = statisticsResponse.data.startTime;
+    const startTime = statisticsResponse.data.startTime || 0;
     uptime.value = formatDuration(startTime);
     setInterval(() => {
       uptime.value = formatDuration(startTime);
