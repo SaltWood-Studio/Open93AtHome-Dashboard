@@ -49,11 +49,13 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in charts" :key="index">
-      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chartData="chart.data"
-        :chartunit="chart.unit" />
+      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chartData="chart.data" :chartunit="chart.unit" :x-axis="chart.xAxis || []" :color="chart.color"/>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in doubleCharts" :key="index">
       <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" />
+    </v-col>
+    <v-col cols="12" md="6" lg="6" v-for="(chart, index) in areaCharts" :key="index">
+      <AreaChartCard :chart-id="index" :title="chart.title" :chartunit="chart.unit" :chart-data="chart.data" :x-axis="chart.xAxis || []" />
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
@@ -64,6 +66,7 @@ import { onMounted, ref } from 'vue';
 import ChartCard from '@/components/ChartCard.vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
+import AreaChartCard from '@/components/AreaChartCard.vue';
 
 const elements = 15;
 const uptime = ref('');
@@ -75,6 +78,10 @@ const charts = ref([
 
 const doubleCharts = ref([
   { title: '今日请求/流量分布', data: Array(24).fill(0), units: [] },
+]);
+
+const areaCharts = ref([
+  { title: '被拒绝请求趋势', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
 ]);
 
 const todayhits = ref('');
@@ -112,18 +119,18 @@ function convertArrayElements(array) {
 }
 
 const formatDuration = (startTime) => {
-    const now = Date.now();
-    const duration = now - startTime;
-    const seconds = Math.floor(duration / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const remainingHours = hours % 24;
-    const remainingMinutes = minutes % 60;
-    const remainingSeconds = seconds % 60;
-    
-    return `${days}:${remainingHours}:${remainingMinutes}:${remainingSeconds}`;
-}
+  const now = Date.now();
+  const duration = now - startTime;
+  const seconds = Math.floor(duration / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const remainingHours = hours % 24;
+  const remainingMinutes = minutes % 60;
+  const remainingSeconds = seconds % 60;
+
+  return `${days}:${remainingHours}:${remainingMinutes}:${remainingSeconds}`;
+};
 
 const getstatistics = async () => {
   try {
@@ -137,30 +144,30 @@ const getstatistics = async () => {
 
     charts.value[1].subtitle = `每日请求分布 (次)`;
     charts.value[1].data = statisticsResponse.data.dailyHits.slice(0, elements);
-    
     charts.value[1].unit = '次';
 
     doubleCharts.value[0].data = statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]]));
-    console.log(statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]])));
     doubleCharts.value[0].units = ['次', hourlyData.targetUnit];
+
+    areaCharts.value[0].data = statisticsResponse.data.rejectedRequests.slice(0, 24); // 更新被拒绝请求数据
 
     todayhits.value = statisticsResponse.data.today.hits;
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
     onlines.value = statisticsResponse.data.onlines;
     sourceCount.value = statisticsResponse.data.sourceCount;
+
     const startTime = statisticsResponse.data.startTime || 0;
     uptime.value = formatDuration(startTime);
     setInterval(() => {
       uptime.value = formatDuration(startTime);
     }, 1000);
 
-    // 新增总文件数和总文件大小
     totalFiles.value = statisticsResponse.data.totalFiles;
     totalSize.value = formataBytes(statisticsResponse.data.totalSize);
   } catch (error) {
-    console.error("Failed to get statistics:", error);
+    console.error('Failed to get statistics:', error);
   }
-}
+};
 
 onMounted(async () => {
   getstatistics();

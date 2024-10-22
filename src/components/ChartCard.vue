@@ -33,6 +33,16 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  color: {
+    type: String,
+    required: false,
+    default: '#4CAF50',
+  },
+  xAxis: {
+    type: Array,
+    required: false,
+    default: [],
+  },
 });
 
 const chartRef = ref(null);
@@ -42,12 +52,15 @@ const initChart = () => {
     const myChart = echarts.init(chartRef.value);
 
     const today = new Date();
-    const dates = Array.from({ length: 15 }, (_, i) => {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const day = date.getDate().toString();
-      return `${day}日`;
-    }).reverse();
+    let dates = props.xAxis;
+    if (dates.length === 0) {
+        dates = Array.from({ length: 15 }, (_, i) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const day = date.getDate().toString();
+        return `${day}日`;
+      }).reverse();
+    }
 
     const option = {
       title: {
@@ -66,12 +79,20 @@ const initChart = () => {
       },
       yAxis: {
         type: 'value',
+        axisLine: {
+          lineStyle: {
+            color: props.color,
+          },
+        }
       },
       series: [
         {
           data: props.chartData.reverse(),
           type: 'line',
           smooth: true,
+          lineStyle: {
+            color: props.color,
+          }
         },
       ],
     };
