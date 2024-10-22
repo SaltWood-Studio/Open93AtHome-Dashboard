@@ -156,7 +156,7 @@ const getstatistics = async () => {
     doubleCharts.value[0].data = statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]]));
     doubleCharts.value[0].units = ['次', hourlyData.targetUnit];
 
-    areaCharts.value[0].data = statisticsResponse.data.rejectedRequests.slice(0, 24); // 更新被拒绝请求数据
+    areaCharts.value[0].data = statisticsResponse.data.rejectedRequests.reverse().slice(0, 24); // 更新被拒绝请求数据
 
     todayhits.value = statisticsResponse.data.today.hits;
     todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
