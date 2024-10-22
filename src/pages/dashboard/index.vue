@@ -119,17 +119,24 @@ function convertArrayElements(array) {
 }
 
 const formatDuration = (startTime) => {
+  if (typeof startTime !== 'number' || startTime <= 0) {
+    throw new Error('Invalid start time');
+  }
+
   const now = Date.now();
   const duration = now - startTime;
-  const seconds = Math.floor(duration / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const remainingHours = hours % 24;
-  const remainingMinutes = minutes % 60;
-  const remainingSeconds = seconds % 60;
 
-  return `${days}:${remainingHours}:${remainingMinutes}:${remainingSeconds}`;
+  const days = Math.floor(duration / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((duration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((duration % (1000 * 60)) / 1000);
+
+  return [
+    String(days).padStart(2, '0'),
+    String(hours).padStart(2, '0'),
+    String(minutes).padStart(2, '0'),
+    String(seconds).padStart(2, '0')
+  ].join(':');
 };
 
 const getstatistics = async () => {
