@@ -13,6 +13,18 @@
                 {{ item.isBanned ? '封禁' : '正常' }}
             </v-chip>
         </template>
+        <template v-slot:item.isProxy="{ item }">
+            <v-chip :color="item.isProxy ? 'blue' : 'orange'"
+                :prepend-icon="item.isProxy ? 'mdi-share' : 'mdi-share-off'" label>
+                {{ item.isProxy ? '代理' : '普通' }}
+            </v-chip>
+        </template>
+        <template v-slot:item.isMasterStats="{ item }">
+            <v-chip :color="item.isMasterStats ? 'blue' : 'orange'"
+                :prepend-icon="item.isMasterStats ? 'mdi-chart-line' : 'mdi-server-network'" label>
+                {{ item.isMasterStats ? '主控统计' : '节点统计' }}
+            </v-chip>
+        </template>
     </v-data-table>
 
     <v-btn prepend-icon="mdi-cancel" @click="ban" color="pink">
@@ -103,6 +115,14 @@
                     v-model="editSponsorUrl"
                     label="赞助商网址"
                 ></v-text-field>
+                <v-checkbox
+                    v-model="editProxy"
+                    label="为代理节点"
+                ></v-checkbox>
+                <v-checkbox
+                    v-model="editMasterStats"
+                    label="启用主控统计"
+                ></v-checkbox>
             </v-card-text>
             <v-card-actions>
                 <v-btn @click="editDialog = false" color="grey" text>
@@ -170,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, isProxy } from 'vue';
 import axios from 'axios';
 
 const items = ref([]);
@@ -190,6 +210,8 @@ const editClusterName = ref('');
 const editBandwidth = ref(null);
 const editSponsor = ref('');
 const editSponsorUrl = ref('');
+const editProxy = ref(false);
+const editMasterStats = ref(false);
 
 const newClusterId = ref('');
 const newClusterSecret = ref('');
@@ -206,7 +228,9 @@ const getlist = async () => {
             clusterName: item.clusterName,
             bandwidth: item.bandwidth,
             fullsize: item.fullsize,
-            isBanned: item.isBanned
+            isBanned: item.isBanned,
+            isMasterStats: item.isMasterStats,
+            isProxy: item.isProxy
         }));
     } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -258,6 +282,8 @@ const openEditDialog = () => {
             editSponsor.value = ''; 
             editSponsorUrl.value = ''; 
             editDialog.value = true;
+            editProxy.value = cluster.isProxy;
+            editMasterStats.value = cluster.isMasterStats;
         }
     }
 }
@@ -270,7 +296,9 @@ const update = async () => {
                 clusterName: editClusterName.value || undefined,
                 bandwidth: editBandwidth.value ? Number(editBandwidth.value) : undefined,
                 sponsor: editSponsor.value || undefined,
-                sponsorUrl: editSponsorUrl.value || undefined
+                sponsorUrl: editSponsorUrl.value || undefined,
+                isProxy: editProxy.value || false,
+                isMasterStats: editMasterStats.value || false
             };
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
@@ -285,6 +313,8 @@ const update = async () => {
             editBandwidth.value = null;
             editSponsor.value = '';
             editSponsorUrl.value = '';
+            editProxy.value = false;
+            editMasterStats.value = false;
 
             modifytext.value = "成功更新节点信息";
             snackbar.value = true;
