@@ -117,7 +117,7 @@
                 ></v-text-field>
                 <v-checkbox
                     v-model="editProxy"
-                    label="为代理节点"
+                    label="代理节点"
                 ></v-checkbox>
                 <v-checkbox
                     v-model="editMasterStats"
