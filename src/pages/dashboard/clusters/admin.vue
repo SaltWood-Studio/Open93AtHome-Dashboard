@@ -158,12 +158,16 @@
             <v-card-title>
                 <span class="headline">修改分片</span>
             </v-card-title>
-            <v-text-field
-                v-model="shards"
-                label="分片数量"
-                type="number"
-                :rules="[v => v > 0 && v <= 1000 || '分片数量必须大于等于0']"
-            ></v-text-field>
+            <v-card-text>
+                <div>全量为 1000，分片大小必须<strong>大于 0 且小于等于 1000</strong>。</div>
+                <div>当前节点分片数量: {{ shards }}</div>
+                <v-text-field
+                    v-model="shards"
+                    label="分片数量"
+                    type="number"
+                    :rules="[v => v > 0 && v <= 1000 || '分片大小必须在 (0, 1000] 之间']"
+                ></v-text-field>
+            </v-card-text>
             <v-card-actions>
                 <v-btn @click="shardsDialog = false" color="grey" text>取消</v-btn>
                 <v-btn @click="confirmShards" color="primary">确认</v-btn>
@@ -390,8 +394,15 @@ const unban = async () => {
 // 打开分片对话框
 const openShardsDialog = () => {
     if (selected.value.length === 1) {
-        shards.value.fill(false);  // 重置复选框状态
-        shardsDialog.value = true;
+        const clusterId = selected.value[0];
+        const cluster = items.value.find(item => item.clusterId === clusterId);
+        if (cluster) {
+            shards.value = cluster.shards;  // 读取当前节点的分片数量
+            shardsDialog.value = true;
+        }
+        else {
+            console.error(`Failed to find cluster with id ${clusterId}`);
+        }
     }
 };
 
