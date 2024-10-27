@@ -158,13 +158,12 @@
             <v-card-title>
                 <span class="headline">修改分片</span>
             </v-card-title>
-            <v-card-text>
-                <v-row no-gutters="true">
-                    <v-col v-for="(bit, index) in 32" :key="index" cols="1">
-                        <v-checkbox v-model="shards[index]" :label="index.toString().padStart(2, '0')" />
-                    </v-col>
-                </v-row>
-            </v-card-text>
+            <v-text-field
+                v-model="shards"
+                label="分片数量"
+                type="number"
+                :rules="[v => v > 0 && v <= 1000 || '分片数量必须大于等于0']"
+            ></v-text-field>
             <v-card-actions>
                 <v-btn @click="shardsDialog = false" color="grey" text>取消</v-btn>
                 <v-btn @click="confirmShards" color="primary">确认</v-btn>
@@ -216,7 +215,7 @@ const editMasterStats = ref(false);
 const newClusterId = ref('');
 const newClusterSecret = ref('');
 
-const shards = ref(new Array(32).fill(false)); // 32个复选框的状态
+const shards = ref(0); // 32个复选框的状态
 
 const canEdit = computed(() => selected.value.length === 1);
 
@@ -401,7 +400,7 @@ const confirmShards = async () => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         try {
-            const shardsValue = booleansToInt(shards.value);  // 将布尔数组转换为整数
+            const shardsValue = shards.value;  // 将布尔数组转换为整数
             await axios.post('/93AtHome/super/modify_shards', { shards: shardsValue }, {
                 params: { clusterId }
             });
@@ -437,16 +436,6 @@ const kick = async () => {
         console.error("Failed to kick cluster:", error);
     }
 };
-
-// 将布尔数组转换为整数（BigInt）
-const booleansToInt = (bits) => {
-    return bits.reduce((acc, bit, index) => {
-        if (bit) {
-            acc |= (1 << index); // 设置第 index 位为 1
-        }
-        return acc;
-    }, 0);
-}
 
 const openRemoveDialog = () => {
     removeDialog.value = true;  // 打开删除确认对话框
