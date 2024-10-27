@@ -160,7 +160,7 @@
             </v-card-title>
             <v-card-text>
                 <div>全量为 1000，分片大小必须<strong>大于 0 且小于等于 1000</strong>。</div>
-                <div>当前节点分片数量: {{ shards }}</div>
+                <div>预计将会承载全站 {{ (shards * 100 / 1000).toFixed(2) }}% 的文件、流量。</div>
                 <v-text-field
                     v-model="shards"
                     label="分片数量"
