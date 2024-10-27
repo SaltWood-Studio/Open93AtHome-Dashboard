@@ -425,6 +425,7 @@ const confirmShards = async () => {
             snackbar.value = true;
             console.error("Failed to modify shards:", error);
         }
+        await getlist();  // 刷新列表
     }
 }
 
