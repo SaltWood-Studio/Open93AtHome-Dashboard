@@ -53,6 +53,8 @@
 
             </v-list-group>
 
+            <v-divider class="my-4"></v-divider>
+            <v-list-item @click="showAboutDialog" prepend-icon="mdi-github" title="关于"></v-list-item>
         </v-list>
     </v-navigation-drawer>
 
@@ -99,6 +101,21 @@
         </v-card>
     </v-dialog>
 
+    <v-dialog v-model="aboutDialog" max-width="800">
+        <v-card>
+            <v-card-title class="headline">关于</v-card-title>
+            <v-card-text>
+                本面板由 <strong><a href="https://github.com/Mxmilu666">Mxmilu666</a></strong> 和 <strong><a href="https://github.com/SALTWOOD">SALTWOOD</a></strong> 联合开发。<br/>
+                项目地址：https://github.com/SaltWood-Studio/Open93AtHome-Dashboard<br/>
+                本项目遵守 <a href="https://github.com/SaltWood-Studio/Open93AtHome-Dashboard/blob/main/LICENSE">MIT 协议</a>。
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="aboutDialog = false">关闭</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+
     <!-- Snackbar -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000" bottom right>
         {{ snackbar.message }}
@@ -121,6 +138,7 @@ const userName = ref('未登录');
 const avatarUrl = ref('default_avatar.png');
 const drawer = ref(null);
 const switchDialog = ref(false);
+const aboutDialog = ref(false);
 const users = ref([]);
 const selectedUsers = ref([]);
 const headers = [
@@ -138,7 +156,7 @@ const snackbar = ref({
 
 const openDrawer = () => {
     drawer.value = !drawer.value;
-}
+};
 
 const getProfile = async () => {
     try {
@@ -154,17 +172,17 @@ const getProfile = async () => {
         message("Failed to get profile");
         console.error("Failed to get profile:", error);
     }
-}
+};
 
 const login = () => {
     router.push('/dashboard/auth/login');
-}
+};
 
 const logout = () => {
     Cookies.remove('token');
     Cookies.remove('adminToken');
     location.reload();
-}
+};
 
 const showSwitchDialog = async () => {
     try {
@@ -175,7 +193,7 @@ const showSwitchDialog = async () => {
         message("Failed to fetch users");
         console.error("Failed to fetch users:", error);
     }
-}
+};
 
 const switchUser = async () => {
     if (selectedUsers.value.length > 1) {
@@ -200,21 +218,25 @@ const switchUser = async () => {
     } else {
         message("请选择一个用户进行切换！");
     }
-  selectedUsers.value = [];
-}
+    selectedUsers.value = [];
+};
 
 const message = (message) => {
     snackbar.value = {
         show: true,
         message
     };
-}
+};
+
+const showAboutDialog = () => {
+    aboutDialog.value = true;
+};
 
 onMounted(async () => {
     if (Cookies.get('token')) {
         await getProfile();
     }
-})
+});
 </script>
 
 <style scoped>
@@ -225,8 +247,8 @@ onMounted(async () => {
     border-radius: 50%;
 }
 .v-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 </style>
