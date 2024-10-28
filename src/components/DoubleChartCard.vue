@@ -29,7 +29,17 @@ const props = defineProps({
     type: Array, // X轴数据，如 ['0时', '1时', '2时', ...]
     required: false,
     default: Array.from({ length: 24 }, (_, i) => `${i}时`)
-  }
+  },
+  colors: {
+    type: Array, // 颜色数组，如 ['#5470C6', '#91CC75']
+    required: false,
+    default: ['#5470C6', '#91CC75']
+  },
+  areaColors: {
+    type: Array, // 面积图颜色数组，如 ['rgba(29,105,150,0.3)', 'rgba(29,105,150,0.3)']
+    required: false,
+    default: ['rgba(29,105,150,0.3)', 'rgba(29,105,150,0.3)']
+  },
 });
 
 const chartRef = ref(null);
@@ -90,7 +100,13 @@ const initChart = () => {
                     smooth: true,
                     yAxisIndex: 0, // 对应左侧 Y 轴
                     lineStyle: {
-                        color: '#5470C6', // 第一条折线颜色
+                      color: '#5470C6', // 第一条折线颜色
+                    },
+                    areaStyle: {
+                      color: props.areaColors[0], // 第一条折线面积颜色
+                    },
+                    itemStyle: {
+                      color: props.colors[0], // 第一条折线颜色
                     },
                 },
                 {
@@ -102,6 +118,12 @@ const initChart = () => {
                     lineStyle: {
                         color: '#91CC75', // 第二条折线颜色
                     },
+                    areaStyle: {
+                        color: props.areaColors[1], // 第二条折线面积颜色
+                    },
+                    itemStyle: {
+                        color: props.colors[1], // 第二条折线颜色
+                    }
                 },
             ],
         };
