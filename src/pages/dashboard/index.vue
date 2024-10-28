@@ -52,7 +52,7 @@
       <AreaChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" :chartunit="chart.unit" :x-axis="chart.xAxis || []" :color="chart.color || undefined" :area-color="chart.areaColor || undefined"/>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in doubleCharts" :key="index">
-      <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" :color="chart.color || undefined" :area-color="chart.areaColor || undefined" />
+      <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" :colors="chart.colors || undefined" :area-colors="chart.areaColors || undefined" />
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
@@ -74,7 +74,7 @@ const charts = ref([
 ]);
 
 const doubleCharts = ref([
-  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [], color: ["rgb(63, 81, 192)", "orange"], areaColor: ["rgba(63, 81, 192, 0.15)", "rgba(255, 152, 0, 0.15)"] },
+  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "orange"], areaColors: ["rgba(63, 81, 192, 0.15)", "rgba(255, 152, 0, 0.15)"] },
 ]);
 
 const todayhits = ref('');

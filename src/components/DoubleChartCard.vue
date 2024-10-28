@@ -77,7 +77,7 @@ const initChart = () => {
                     position: 'left',
                     axisLine: {
                         lineStyle: {
-                          color: '#5470C6', // 左侧 Y 轴线颜色
+                          color: props.colors[0], // 左侧 Y 轴线颜色
                         },
                     },
                 },
@@ -87,7 +87,7 @@ const initChart = () => {
                   position: 'right',
                   axisLine: {
                     lineStyle: {
-                      color: '#91CC75', // 右侧 Y 轴线颜色
+                      color: props.colors[1], // 右侧 Y 轴线颜色
                     },
                   },
                 },
@@ -99,9 +99,6 @@ const initChart = () => {
                     data: props.data.map(item => item[0]), // 第一条折线数据
                     smooth: true,
                     yAxisIndex: 0, // 对应左侧 Y 轴
-                    lineStyle: {
-                      color: '#5470C6', // 第一条折线颜色
-                    },
                     areaStyle: {
                       color: props.areaColors[0], // 第一条折线面积颜色
                     },
@@ -115,9 +112,6 @@ const initChart = () => {
                     data: props.data.map(item => item[1]), // 第二条折线数据
                     smooth: true,
                     yAxisIndex: 1, // 对应右侧 Y 轴
-                    lineStyle: {
-                        color: '#91CC75', // 第二条折线颜色
-                    },
                     areaStyle: {
                         color: props.areaColors[1], // 第二条折线面积颜色
                     },
