@@ -60,7 +60,6 @@
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import ChartCard from '@/components/ChartCard.vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
 import AreaChartCard from '@/components/AreaChartCard.vue';
