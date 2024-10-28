@@ -74,7 +74,7 @@ const charts = ref([
 ]);
 
 const doubleCharts = ref([
-  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "orange"], areaColors: ["rgba(63, 81, 192, 0.15)", "rgba(255, 152, 0, 0.15)"] },
+  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "rgb(7, 200, 19)"], areaColors: ["rgba(63, 81, 192, 0.15)", "rgba(7, 200, 19, 0.15)"] },
 ]);
 
 const todayhits = ref('');
