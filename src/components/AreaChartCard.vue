@@ -38,6 +38,16 @@
       required: false,
       default: [],
     },
+    color: {
+      type: String,
+      required: false,
+      default: 'red',
+    },
+    areaColor: {
+      type: String,
+      required: false,
+      default: 'rgba(255, 0, 0, 0.3)',
+    },
   });
   
   const chartRef = ref(null);
@@ -81,13 +91,13 @@
             type: 'line',
             smooth: true,
             itemStyle: {
-                color: "red",
+                color: props.color,
             },
             lineStyle: {
                 width: 2
             },
             areaStyle: {
-                color: 'rgba(255, 0, 0, 0.3)'
+                color: props.areaColor
             }
           },
         ],

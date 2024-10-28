@@ -49,13 +49,10 @@
       </v-card>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in charts" :key="index">
-      <ChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chartData="chart.data" :chartunit="chart.unit" :x-axis="chart.xAxis || []" :color="chart.color"/>
+      <AreaChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" :chartunit="chart.unit" :x-axis="chart.xAxis || []" :color="chart.color || undefined" :area-color="chart.areaColor || undefined"/>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in doubleCharts" :key="index">
       <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" />
-    </v-col>
-    <v-col cols="12" md="6" lg="6" v-for="(chart, index) in areaCharts" :key="index">
-      <AreaChartCard :chart-id="index" :title="chart.title" :chartunit="chart.unit" :chart-data="chart.data" :x-axis="chart.xAxis || []" />
     </v-col>
   </v-row>
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
@@ -72,16 +69,13 @@ const elements = 15;
 const uptime = ref('');
 
 const charts = ref([
-  { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '' },
-  { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '' },
+  { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '', color: "orange", areaColor: "rgba(255, 152, 0, 0.15)" },
+  { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '', color: "rgb(63, 81, 192)", areaColor: "rgba(63, 81, 192, 0.15)" },
+  { title: '被拒绝请求趋势', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
 ]);
 
 const doubleCharts = ref([
   { title: '今日请求/流量分布', data: Array(24).fill(0), units: [] },
-]);
-
-const areaCharts = ref([
-  { title: '被拒绝请求趋势', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
 ]);
 
 const todayhits = ref('');
