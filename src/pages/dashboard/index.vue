@@ -55,7 +55,28 @@
       <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" :colors="chart.colors || undefined" :area-colors="chart.areaColors || undefined" />
     </v-col>
   </v-row>
-  <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
+
+      <v-container>
+        <v-divider></v-divider>
+          <br/>
+          <v-row>
+              <v-col class="text-center footer">
+                  <p>
+                      本面板由 
+                      <strong><a href="https://github.com/Mxmilu666" target="_blank" rel="noopener noreferrer">Mxmilu666</a></strong> 和 
+                      <strong><a href="https://github.com/SALTWOOD" target="_blank" rel="noopener noreferrer">SALTWOOD</a></strong> 联合开发。
+                  </p>
+                  <p>
+                      项目地址：<a href="https://github.com/SaltWood-Studio/Open93AtHome-Dashboard" target="_blank" rel="noopener noreferrer">GitHub</a> |
+                      <a href="https://github.com/SaltWood-Studio/Open93AtHome-Dashboard/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT 协议</a>
+                  </p>
+                  <p>
+                      版权所有 © 2024 Mxmilu & SALTWOOD
+                  </p>
+              </v-col>
+          </v-row>
+      </v-container>
+  <!-- Ray、浮杨和米露大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
 <script setup>
@@ -173,6 +194,26 @@ onMounted(async () => {
   getstatistics();
 });
 </script>
+
+<style>
+    .footer a:link {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .footer a:visited {
+        color: #0056b3;
+    }
+
+    .footer a:hover {
+        color: #000000;
+        text-decoration: underline;
+    }
+
+    .footer a:active {
+        color: #003d80;
+    }
+</style>
 
 <route lang="yaml">
   meta:

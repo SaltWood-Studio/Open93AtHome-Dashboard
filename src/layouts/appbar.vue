@@ -52,9 +52,6 @@
                 <v-list-item v-if="isSuperAdmin" :to="{ path: '/dashboard/clusters/admin' }" title="超管面板"></v-list-item>
 
             </v-list-group>
-
-            <v-divider class="my-4"></v-divider>
-            <v-list-item @click="showAboutDialog" prepend-icon="mdi-github" title="关于"></v-list-item>
         </v-list>
     </v-navigation-drawer>
 
@@ -97,29 +94,6 @@
                 <v-spacer></v-spacer>
                 <v-btn @click="switchUser" color="primary">切换</v-btn>
                 <v-btn @click="switchDialog = false">取消</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="aboutDialog" max-width="800">
-        <v-card>
-            <v-card-title class="headline">关于</v-card-title>
-            <v-card-text>
-                本面板由 <strong><a href="https://github.com/Mxmilu666">Mxmilu666</a></strong> 和 <strong><a href="https://github.com/SALTWOOD">SALTWOOD</a></strong> 联合开发。<br/>
-                项目地址：https://github.com/SaltWood-Studio/Open93AtHome-Dashboard<br/>
-                本项目遵守 <a href="https://github.com/SaltWood-Studio/Open93AtHome-Dashboard/blob/main/LICENSE">MIT 协议</a>。<br/><br/>
-                <strong>MIT许可证<br/><br/>
-                    版权所有 © 2024 Mxmilu & SALTWOOD<br/><br/>
-
-                    特此免费授权任何获得本软件及相关文档文件（“软件”）副本的人，可以不受限制地使用该软件，包括但不限于使用、复制、修改、合并、发布、分发、再许可和/或出售该软件的副本，以及允许向其提供软件的人这样做，遵循以下条件：<br/><br/>
-
-                    上述版权声明和本许可声明应包含在所有副本或重要部分的软件中。<br/><br/>
-
-                    该软件是“按现状”提供的，不提供任何形式的担保，明示或暗示，包括但不限于对适销性、特定用途适用性和不侵权的担保。在任何情况下，作者或版权持有者对因合同、侵权或其他方式引起的任何索赔、损害或其他责任不承担责任，无论是在合同诉讼、侵权诉讼或其他方式中，均不因使用或其他交易而产生的责任。</strong>
-            </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="aboutDialog = false">关闭</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

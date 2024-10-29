@@ -3,7 +3,7 @@
       <v-card-title class="font-weight-black">{{ title }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <div ref="chartRef" style="width: 90%; height: 300px;"></div>
+        <div ref="chartRef" style="width: 90%; height: 280px;"></div>
       </v-card-text>
     </v-card>
   </template>
