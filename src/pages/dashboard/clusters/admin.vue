@@ -135,7 +135,7 @@
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showInfoDialog" max-width="400px">
+    <v-dialog v-model="showInfoDialog" max-width="500px">
         <v-card>
             <v-card-title>
                 <span class="headline">节点信息</span>
