@@ -134,7 +134,7 @@ const bindcluster = async () => {
 };
 
 const formatCreatedAt = (createdAt) => {
-  const date = new Date(createdAt * 1000);
+  const date = new Date(createdAt);
   const chinaTime = new Date(date.getTime());
 
   const year = chinaTime.getFullYear();
