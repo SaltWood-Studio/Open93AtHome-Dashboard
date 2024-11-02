@@ -18,7 +18,7 @@
                     <v-text-field label="Endpoint" :model-value="`${cluster.endpoint}:${cluster.port}`"
                         readonly></v-text-field>
                     <v-text-field label="上行速率" v-model="cluster.bandwidth" :readonly="!modify" suffix="Mbps"
-                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                        :type="'number'" :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
 
                     <v-divider></v-divider>
 
@@ -151,11 +151,7 @@ const formatCreatedAt = (createdAt) => {
 
 const getclusters = async () => {
     try {
-        const response = await axios.get('/93AtHome/dashboard/user/clusters', {
-            params: {
-                clusterId: route.params.id,
-            }
-        });
+        const response = await axios.get(`/api/user/clusters/${route.params.id}`);
         cluster.value = response.data;
     } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -167,15 +163,11 @@ const modifyinf = async () => {
 
     if (!modify.value) {
         try {
-            const modifyres = await axios.post('/93AtHome/dashboard/user/cluster/profile', {
-                clusterName: cluster.value.clusterName,
+            const modifyres = await axios.put(`/api/user/clusters/${cluster.value.clusterId}`, {
+                name: cluster.value.clusterName,
                 bandwidth: cluster.value.bandwidth,
                 sponsor: cluster.value.sponsor,
                 sponsorUrl: cluster.value.sponsorUrl,
-            }, {
-                params: {
-                    clusterId: cluster.value.clusterId
-                }
             });
             modifytext.value = "成功修改信息";
             snackbar.value = true;
@@ -190,9 +182,7 @@ const modifyinf = async () => {
 const unbind = async () => {
     if (cluster.value.clusterId === clusterId.value) {
         try {
-            const unbind = await axios.post('/93AtHome/dashboard/user/unbindCluster', {
-                clusterId: cluster.value.clusterId,
-            });
+            const unbind = await axios.post(`/api/user/clusters/${cluster.value.clusterId}/unbind`);
             modifytext.value = "成功解绑";
             snackbar.value = true;
             showInput.value = false;
@@ -206,7 +196,7 @@ const unbind = async () => {
             console.error("Failed to modify cluster information:", error);
         }
     } else {
-        modifytext.value = `clusterId 不一致`;
+        modifytext.value = `输入的 ID 不一致`;
         snackbar.value = true;
     }
 }
@@ -214,14 +204,10 @@ const unbind = async () => {
 const resetSecret = async () => {
     if (confirmName.value === cluster.value.clusterName) {
         try {
-            const response = await axios.post('/93AtHome/dashboard/user/cluster/reset_secret', null, {
-                params: {
-                    clusterId: cluster.value.clusterId
-                }
-            });
+            const response = await axios.post(`/api/user/clusters/${cluster.value.clusterId}/reset_secret`);
             modifytext.value = "成功重置密钥";
             showResetDialog.value = false;
-            newSecret.value = response.data.clusterSecret;
+            newSecret.value = response.data.secret;
             showNewSecret.value = true;
         } catch (error) {
             modifytext.value = `重置密钥失败: ${error}`;

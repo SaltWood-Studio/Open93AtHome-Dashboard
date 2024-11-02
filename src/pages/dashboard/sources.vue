@@ -120,7 +120,7 @@ const checkImage = async (source) => {
 
 const fetchSources = async () => {
   try {
-    const response = await axios.get("/93AtHome/syncSources");
+    const response = await axios.get("/api/stats/source");
     sources.value = response.data;
 
     for (const source of sources.value) {
@@ -141,15 +141,13 @@ const filteredSources = computed(() => {
 // 文件更新的 POST 请求
 const updateFiles = async () => {
   try {
-    const response = await axios.post("/93AtHome/super/update");
+    const response = await axios.post("/api/admin/update");
 
-    // 根据不同的返回状态进行处理
-    if (response.status === 204) {
-      snackbarMessage.value = "开始更新文件！";
-    } else if (response.status === 409) {
-      snackbarMessage.value = "文件更新已在进行中，请稍后重试。";
+    const { success } = response.data;
+    if (success) {
+      snackbarMessage.value = "成功开始更新文件。";
     } else {
-      snackbarMessage.value = "更新失败，发生未知错误。";
+      snackbarMessage.value = `文件更新失败，${response.data.message}。`;
     }
   } catch (err) {
     snackbarMessage.value = "请求失败，请检查网络或稍后再试。";

@@ -106,7 +106,7 @@ const bindsuccess = () => {
 const bindcluster = async () => {
   loading.value = true;
   try {
-    const Url = `/93AtHome/dashboard/user/bindCluster`;
+    const Url = `/api/user/clusters/bind`;
     const response = await axios.post(Url, {
       clusterId: clusterId.value,
       clusterSecret: clusterSecret.value,
@@ -149,7 +149,7 @@ const formatCreatedAt = (createdAt) => {
 
 const getclusters = async () => {
   try {
-    const response = await axios.get('/93AtHome/dashboard/user/clusters');
+    const response = await axios.get('/api/user/clusters');
     cards.value = response.data.map((item) => ({
       clusterId: item.clusterId,
       clusterName: item.clusterName,

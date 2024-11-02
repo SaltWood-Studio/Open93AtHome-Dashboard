@@ -17,6 +17,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  subtitle: {
+    type: String,
+    required: false,
+    default: '',
+  },
   units: {
     type: Array, // 单位数组，如 ['MB', '请求数']
     required: true,
@@ -52,6 +57,9 @@ const initChart = () => {
         const xAxisData = xAxis.value; // X轴为0时到23时
   
         const option = {
+            title: {
+                subtext: props.subtitle,
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {

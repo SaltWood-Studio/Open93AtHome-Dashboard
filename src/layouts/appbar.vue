@@ -142,7 +142,7 @@ const openDrawer = () => {
 
 const getProfile = async () => {
     try {
-        const response = await axios.get('/93AtHome/dashboard/user/profile');
+        const response = await axios.get('/api/user/me');
         const data = response.data;
         avatarUrl.value = data.avatar_url;
         userName.value = data.login;
@@ -168,7 +168,7 @@ const logout = () => {
 
 const showSwitchDialog = async () => {
     try {
-        const response = await axios.get('/93AtHome/super/list_users');
+        const response = await axios.get('/api/admin/all_users');
         users.value = response.data;
         switchDialog.value = true;
     } catch (error) {
@@ -186,7 +186,7 @@ const switchUser = async () => {
     const selectedUser = selectedUsers.value.at(0);
     if (selectedUser) {
         try {
-            const response = await axios.post('/93AtHome/super/sudo', { id: selectedUser });
+            const response = await axios.post('/api/admin/sudo', { id: selectedUser });
             if (response.status === 200) {
                 message("切换成功");
                 switchDialog.value = false;

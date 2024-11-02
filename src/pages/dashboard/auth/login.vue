@@ -67,7 +67,7 @@ const getBack = () => {
 const getcode = async () => {
   try {
     loading.value = true;
-    const response = await axios.get('/93AtHome/dashboard/oauth_id');
+    const response = await axios.get('/api/auth/id');
     const redirect_uri = window.location.href;
     const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${response.data}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
     window.location.href = redirectUrl;
@@ -79,12 +79,8 @@ const getcode = async () => {
 
 const callback = async (code) => {
   try {
-    const Url = `/93AtHome/dashboard/user/oauth`;
-    const response = await axios.get(Url, {
-      params: {
-        code: code,
-      },
-    });
+    const url = `/api/auth/login?code=${code}`;
+    const response = await axios.post(url);
 
     if (response.status === 200) {
       success.value = true;

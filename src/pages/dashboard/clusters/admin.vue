@@ -225,7 +225,7 @@ const canEdit = computed(() => selected.value.length === 1);
 
 const getlist = async () => {
     try {
-        const response = await axios.get('/93AtHome/list_clusters');
+        const response = await axios.get('/api/admin/all_clusters');
         items.value = response.data.map(item => ({
             clusterId: item.clusterId,
             clusterName: item.clusterName,
@@ -246,8 +246,8 @@ const openCreateDialog = () => {
 
 const create = async () => {
     try {
-        const response = await axios.post('/93AtHome/super/cluster/create', {
-            clusterName: newClusterName.value,
+        const response = await axios.post('/api/clusters', {
+            name: newClusterName.value,
             bandwidth: newBandwidth.value
         });
 
@@ -305,9 +305,7 @@ const update = async () => {
             };
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
-            await axios.post('/93AtHome/super/cluster/profile', requestBody, {
-                params: { clusterId }
-            });
+            await axios.put(`/api/clusters/${clusterId}`, requestBody);
 
             await getlist();
             selected.value = [];
@@ -334,9 +332,8 @@ const ban = async () => {
 
     try {
         for (const clusterId of clusterIdsToBan) {
-            await axios.post('/93AtHome/super/cluster/ban', {
-                ban: true,
-                clusterId: clusterId
+            await axios.post(`/api/clusters/${clusterId}/ban`, {
+                banned: true
             });
 
             items.value = items.value.map(item => {
@@ -365,9 +362,8 @@ const unban = async () => {
 
     try {
         for (const clusterId of clusterIdsToUnban) {
-            await axios.post('/93AtHome/super/cluster/ban', {
-                ban: false,
-                clusterId: clusterId
+            await axios.post(`/api/clusters/${clusterId}/ban`, {
+                banned: false
             });
 
             items.value = items.value.map(item => {
@@ -412,9 +408,7 @@ const confirmShards = async () => {
         const clusterId = selected.value[0];
         try {
             const shardsValue = shards.value;  // 将布尔数组转换为整数
-            await axios.post('/93AtHome/super/modify_shards', { shards: shardsValue }, {
-                params: { clusterId }
-            });
+            await axios.put(`/api/clusters/${clusterId}/shards`, { shards: shardsValue });
 
             modifytext.value = "成功修改分片";
             snackbar.value = true;
@@ -434,9 +428,7 @@ const kick = async () => {
 
     try {
         for (const clusterId of clusterIdsToKick) {
-            await axios.post(`/93AtHome/super/cluster/kick`, null, {
-                params: { clusterId }
-            });
+            await axios.post(`/api/clusters/${clusterId}/kick`);
         }
 
         modifytext.value = "成功下线节点";
@@ -455,9 +447,7 @@ const openRemoveDialog = () => {
 
 const removeClusters = async () => {
     try {
-        await axios.post('/93AtHome/super/cluster/remove', {
-            clusterIds: selected.value
-        });
+        await axios.delete(`/api/clusters/${selected.value}`);
         modifytext.value = "成功删除节点";
         snackbar.value = true;
         removeDialog.value = false;

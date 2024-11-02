@@ -12,13 +12,13 @@
           <v-col>
             <v-card-title class="font-weight-black text-h6">当日全网总请求</v-card-title>
             <v-card-text class="font-weight-black text-h5">
-              {{ todayhits }} 次
+              {{ todayHits }} 次
             </v-card-text>
           </v-col>
           <v-col>
             <v-card-title class="font-weight-black text-h6">当日全网总流量</v-card-title>
             <v-card-text class="font-weight-black text-h5">
-              {{ todaybytes }}
+              {{ todayBytes }}
             </v-card-text>
           </v-col>
           <v-col>
@@ -52,7 +52,7 @@
       <AreaChartCard :chart-id="index" :title="chart.title" :subtitle="chart.subtitle" :chart-data="chart.data" :chartunit="chart.unit" :x-axis="chart.xAxis || []" :color="chart.color || undefined" :area-color="chart.areaColor || undefined"/>
     </v-col>
     <v-col cols="12" md="6" lg="6" v-for="(chart, index) in doubleCharts" :key="index">
-      <DoubleChartCard :title="chart.title" :units="chart.units" :data="chart.data" :colors="chart.colors || undefined" :area-colors="chart.areaColors || undefined" />
+      <DoubleChartCard :title="chart.title" :subtitle="chart.subtitle" :units="chart.units" :data="chart.data" :colors="chart.colors || undefined" :area-colors="chart.areaColors || undefined" />
     </v-col>
   </v-row>
 
@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
 import AreaChartCard from '@/components/AreaChartCard.vue';
@@ -95,16 +95,16 @@ const charts = ref([
 ]);
 
 const doubleCharts = ref([
-  { title: '今日请求/流量分布', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "rgb(7, 200, 19)"], areaColors: ["rgba(63, 81, 192, 0.3)", "rgba(7, 200, 19, 0.3)"] },
+  { title: '今日请求/流量分布', subtitle: '', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "rgb(7, 200, 19)"], areaColors: ["rgba(63, 81, 192, 0.3)", "rgba(7, 200, 19, 0.3)"] },
 ]);
 
-const todayhits = ref('');
-const todaybytes = ref('');
-const arraydata = ref({});
+const todayHits = ref('');
+const todayBytes = ref('');
 const onlines = ref('');
 const sourceCount = ref('');
 const totalFiles = ref('');
 const totalSize = ref('');
+let uptimeInterval;
 
 const formataBytes = (bytes) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -155,36 +155,41 @@ const formatDuration = (startTime) => {
 
 const getstatistics = async () => {
   try {
-    const statisticsResponse = await axios.get('/93AtHome/centerStatistics');
-    arraydata.value = convertArrayElements(statisticsResponse.data.dailyBytes.slice(0, elements));
-    const hourlyData = convertArrayElements(statisticsResponse.data.hourly.slice(0, 24).map(hour => hour[1]));
+    const statisticsResponse = await axios.get('/api/stats/center');
+    todayHits.value = statisticsResponse.data.today.hits;
+    todayBytes.value = formataBytes(statisticsResponse.data.today.bytes);
 
-    charts.value[0].subtitle = `每日流量分布 (${arraydata.value.targetUnit})`;
-    charts.value[0].data = arraydata.value.converted;
-    charts.value[0].unit = arraydata.value.targetUnit;
-
-    charts.value[1].subtitle = `每日请求分布 (次)`;
-    charts.value[1].data = statisticsResponse.data.dailyHits.slice(0, elements);
-    charts.value[1].unit = '次';
-
-    doubleCharts.value[0].data = statisticsResponse.data.hourly.slice(0, 24).map((hour, index) => ([hour[0], hourlyData.converted[index]]));
-    doubleCharts.value[0].units = ['次', hourlyData.targetUnit];
-
-    charts.value[2].data = statisticsResponse.data.rejectedRequests.reverse().slice(0, 24); // 更新被拒绝请求数据
-
-    todayhits.value = statisticsResponse.data.today.hits;
-    todaybytes.value = formataBytes(statisticsResponse.data.today.bytes);
+    // 上面的信息
     onlines.value = statisticsResponse.data.onlines;
-    sourceCount.value = statisticsResponse.data.sourceCount;
-
-    const startTime = statisticsResponse.data.startTime || 0;
-    uptime.value = formatDuration(startTime);
-    setInterval(() => {
-      uptime.value = formatDuration(startTime);
-    }, 1000);
-
+    sourceCount.value = statisticsResponse.data.sources;
     totalFiles.value = statisticsResponse.data.totalFiles;
     totalSize.value = formataBytes(statisticsResponse.data.totalSize);
+    uptime.value = formatDuration(statisticsResponse.data.startTime);
+    uptimeInterval = setInterval(() => uptime.value = formatDuration(statisticsResponse.data.startTime), 1000); // 每秒更新1次
+
+    // 图表
+    const hourlyHits = (statisticsResponse.data.hourly[0] || []).slice(0, 24);
+    const hourlyBytes = convertArrayElements((statisticsResponse.data.hourly[1] || []).slice(0, 24));
+
+    const dailyHits = (statisticsResponse.data.daily[0] || []).slice(0, elements);
+    const dailyBytes = convertArrayElements((statisticsResponse.data.daily[1] || []).slice(0, elements));
+    const rejected = statisticsResponse.data.rejected.slice(0, 24);
+
+    charts.value[0].subtitle = `每日流量分布 (${dailyBytes.targetUnit})`;
+    charts.value[0].data = dailyBytes.converted;
+    charts.value[0].unit = dailyBytes.targetUnit;
+
+    charts.value[1].subtitle = "每日请求分布 (次)";
+    charts.value[1].data = dailyHits;
+    charts.value[1].unit = '次';
+
+    charts.value[2].subtitle = "今日拒绝请求趋势 (次)";
+    charts.value[2].data = rejected.reverse();
+    charts.value[2].unit = '次';
+
+    doubleCharts.value[0].subtitle = `今日请求/流量分布 (次/${hourlyBytes.targetUnit})`;
+    doubleCharts.value[0].data = hourlyHits.map((value, index) => ([value, hourlyBytes.converted[index]]));
+    doubleCharts.value[0].units = ["次", hourlyBytes.targetUnit];
   } catch (error) {
     console.error('Failed to get statistics:', error);
   }
@@ -192,6 +197,13 @@ const getstatistics = async () => {
 
 onMounted(async () => {
   getstatistics();
+});
+
+onBeforeUnmount(() => {
+  if (uptimeInterval) {
+    clearInterval(uptimeInterval);
+    uptimeInterval = null;
+  }
 });
 </script>
 

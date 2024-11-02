@@ -81,7 +81,7 @@ const formatBytes = (bytes) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/93AtHome/rank');
+    const response = await axios.get('/api/clusters');
     items.value = response.data.map((item, index) => ({
       rank: index + 1,
       id: item.clusterId,
@@ -102,12 +102,14 @@ onMounted(async () => {
 
 const openDialog = async (clusterId) => {
   try {
-    const response = await axios.get(`/93AtHome/clusterStatistics?clusterId=${clusterId}`);
-    selectedClusterData.value = response.data.map(item => [item.hits, formatBytes(item.bytes)]);
+    const response = await axios.get(`/api/stats/cluster/${clusterId}`);
+    const hits = response.data.hits;
+    const bytes = response.data.bytes;
+    selectedClusterData.value = hits.map((item, index) => [item, bytes[index]]);
     const cluster = items.value.find(item => item.id === clusterId);
     selectedClusterTitle.value = cluster.name;
     dialog.value = true;
-    xAxisData.value = response.data.map(item => `${item.date.split('-').at(-1).replace(/^0+/, '')}日`);
+    xAxisData.value = response.data.dates.map(item => `${item.split('-').at(-1).replace(/^0+/, '')}日`);
   } catch (error) {
     console.error('Failed to fetch cluster statistics:', error);
   }
