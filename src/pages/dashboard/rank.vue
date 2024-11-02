@@ -39,7 +39,7 @@
       <v-card-title class="font-weight-black">统计数据</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
-        <DoubleChartCard v-if="selectedClusterData" :title="selectedClusterTitle" :units="['请求数', '流量']" :data="selectedClusterData" :x-axis="xAxisData"/>
+        <DoubleChartCard v-if="selectedClusterData" :title="selectedClusterTitle" :units="units" :data="selectedClusterData" :x-axis="xAxisData"/>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -66,6 +66,7 @@ const headers = ref([
   { title: '操作', value: 'action', sortable: false } // 添加操作列
 ]);
 
+const units = ref(["次", "Bytes"]);
 const items = ref([]);
 const dialog = ref(false);  // 控制弹出窗口的显示与隐藏
 const selectedClusterData = ref(null);  // 用于存储点击后的统计数据
@@ -79,6 +80,25 @@ const formatBytes = (bytes) => {
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
+function convertArrayElements(array) {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+  // 找到数组中的最大字节值
+  const maxBytes = Math.max(...array);
+
+  // 根据最大字节值计算最适合的单位
+  const maxIndex = Math.min(4, Math.floor(Math.log(maxBytes || 1) / Math.log(1024)));
+  const targetUnit = units[maxIndex];
+
+  // 转换每个字节值到统一的单位
+  const convertedArray = array.map(byteValue => {
+    const i = Math.min(maxIndex, Math.floor(Math.log(byteValue || 1) / Math.log(1024)));
+    return (byteValue / Math.pow(1024, maxIndex)).toFixed(2);
+  });
+
+  return { converted: convertedArray, targetUnit };
+}
+
 onMounted(async () => {
   try {
     const response = await axios.get('/api/clusters');
@@ -87,7 +107,7 @@ onMounted(async () => {
       id: item.clusterId,
       name: item.clusterName,
       hits: item.hits !== null ? item.hits : 0,
-      bytes: formatBytes(item.traffic !== null ? item.traffic : 0),
+      bytes: formatBytes(item.bytes !== null ? item.bytes : 0),
       sponsor: item.sponsor,
       sponsorUrl: item.sponsorUrl,
       ownerName: item.ownerName,
@@ -104,8 +124,10 @@ const openDialog = async (clusterId) => {
   try {
     const response = await axios.get(`/api/stats/cluster/${clusterId}`);
     const hits = response.data.hits;
-    const bytes = response.data.bytes;
-    selectedClusterData.value = hits.map((item, index) => [item, formatBytes(bytes[index])]);
+    const data = convertArrayElements(response.data.bytes);
+    const bytes = data.converted;
+    units.value[1] = data.targetUnit;
+    selectedClusterData.value = hits.map((item, index) => [item, bytes[index]]);
     const cluster = items.value.find(item => item.id === clusterId);
     selectedClusterTitle.value = cluster.name;
     dialog.value = true;
