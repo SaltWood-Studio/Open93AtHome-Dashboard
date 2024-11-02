@@ -296,7 +296,7 @@ const update = async () => {
         const clusterId = selected.value[0];
         try {
             const requestBody = {
-                clusterName: editClusterName.value || undefined,
+                name: editClusterName.value || undefined,
                 bandwidth: editBandwidth.value ? Number(editBandwidth.value) : undefined,
                 sponsor: editSponsor.value || undefined,
                 sponsorUrl: editSponsorUrl.value || undefined,
