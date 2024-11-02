@@ -53,7 +53,7 @@
         <span>修改分片</span>
     </v-btn>
 
-    <v-snackbar v-model="snackbar">
+    <v-snackbar v-model="snackbar" timeout="3000">
         {{ modifytext }}
         <template v-slot:actions>
             <v-btn color="primary" variant="text" @click="snackbar = false">
@@ -135,16 +135,22 @@
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showInfoDialog" max-width="600px">
+    <v-dialog v-model="showInfoDialog" max-width="400px">
         <v-card>
             <v-card-title>
                 <span class="headline">节点信息</span>
             </v-card-title>
             <v-card-text>
-                <div><strong>ID:</strong> {{ newClusterId }}</div>
-                <div><strong>Secret:</strong> {{ newClusterSecret }}</div>
+                <div>成功创建新节点！</div>
+                <div><strong>名称:</strong> {{ newClusterName }}</div>
+                <div>节点信息如下：</div><br/>
+                <v-text-field label="ID" v-model="newClusterId" readonly></v-text-field>
+                <v-text-field label="Secret" v-model="newClusterSecret" readonly></v-text-field>
             </v-card-text>
             <v-card-actions>
+                <v-btn @click="copyNewCluster" color="blue" text>
+                    复制
+                </v-btn>
                 <v-btn @click="showInfoDialog = false" color="grey" text>
                     关闭
                 </v-btn>
@@ -222,6 +228,12 @@ const newClusterSecret = ref('');
 const shards = ref(0); // 32个复选框的状态
 
 const canEdit = computed(() => selected.value.length === 1);
+
+const copyNewCluster = () => {
+    navigator.clipboard.writeText(`ID: ${newClusterId.value}\nSecret: ${newClusterSecret.value}`);
+    modifytext.value = '复制成功';
+    snackbar.value = true;
+};
 
 const getlist = async () => {
     try {
