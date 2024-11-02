@@ -105,7 +105,7 @@ const openDialog = async (clusterId) => {
     const response = await axios.get(`/api/stats/cluster/${clusterId}`);
     const hits = response.data.hits;
     const bytes = response.data.bytes;
-    selectedClusterData.value = hits.map((item, index) => [item, bytes[index]]);
+    selectedClusterData.value = hits.map((item, index) => [item, formatBytes(bytes[index])]);
     const cluster = items.value.find(item => item.id === clusterId);
     selectedClusterTitle.value = cluster.name;
     dialog.value = true;
