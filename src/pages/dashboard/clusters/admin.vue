@@ -142,7 +142,6 @@
             </v-card-title>
             <v-card-text>
                 <div>成功创建新节点！</div>
-                <div><strong>名称:</strong> {{ newClusterName }}</div>
                 <div>节点信息如下：</div><br/>
                 <v-text-field label="ID" v-model="newClusterId" readonly></v-text-field>
                 <v-text-field label="Secret" v-model="newClusterSecret" readonly></v-text-field>
