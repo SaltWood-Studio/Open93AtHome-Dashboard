@@ -1,6 +1,6 @@
 {
   "name": "93home-dash",
-  "version": "0.0.0",
+  "version": "1.2.8",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",

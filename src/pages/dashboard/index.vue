@@ -91,7 +91,7 @@ const uptime = ref('');
 const charts = ref([
   { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '', color: "orange", areaColor: "rgba(255, 152, 0, 0.15)" },
   { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '', color: "rgb(63, 81, 192)", areaColor: "rgba(63, 81, 192, 0.15)" },
-  { title: '被拒绝请求趋势', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
+  { title: '被拒绝请求趋势', subtitle: '', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
 ]);
 
 const doubleCharts = ref([
