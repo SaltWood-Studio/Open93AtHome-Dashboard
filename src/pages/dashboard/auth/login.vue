@@ -70,9 +70,9 @@ const getBack = () => {
 const getcode = async () => {
   try {
     loading.value = true;
-    const response = await axios.get<{ clientId: string }>('/api/auth/id');
+    const response = await axios.get('/api/auth/id');
     const redirect_uri = window.location.href;
-    const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${response.data.clientId}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
+    const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${response.data}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
     window.location.href = redirectUrl;
   } catch (error) {
     loading.value = false;
