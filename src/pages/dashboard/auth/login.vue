@@ -44,85 +44,87 @@
   </v-app>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+// 使用 Vue Router
 const router = useRouter();
 const route = useRoute();
 
-const loading = ref(false)
-const success = ref(false)
-const failure = ref(false)
-const failurerea = ref('')
-const username = ref('');
+// 定义响应变量
+const loading = ref<boolean>(false);
+const success = ref<boolean>(false);
+const failure = ref<boolean>(false);
+const failurerea = ref<string>('');
+const username = ref<string>('');
 
-
+// 返回上一页
 const getBack = () => {
   router.go(-1);
 }
 
+// 获取客户端 ID
 const getcode = async () => {
   try {
     loading.value = true;
-    const response = await axios.get('/api/auth/id');
+    const response = await axios.get<{ clientId: string }>('/api/auth/id');
     const redirect_uri = window.location.href;
-    const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${response.data}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
+    const redirectUrl = `https://github.com/login/oauth/authorize?client_id=${response.data.clientId}&redirect_uri=${encodeURIComponent(redirect_uri)}`;
     window.location.href = redirectUrl;
   } catch (error) {
     loading.value = false;
-    console.error("Failed to get client_id:", error);
+    console.error("获取 client_id 失败:", error);
   }
 }
 
-const callback = async (code) => {
+// 处理回调
+const callback = async (code: string) => {
   try {
     const url = `/api/auth/login?code=${code}`;
-    const response = await axios.post(url);
+    const response = await axios.post<{ username: string, error: string }> (url);
 
     if (response.status === 200) {
       success.value = true;
-      loading.value = false;
-      username.value = response.data.username
+      username.value = response.data.username;
       setTimeout(() => {
         redirectToHome();
       }, 3000);
     } else {
       failure.value = true;
-      console.log(response.data);
-      console.log("Login failed with status:", response.status);
       failurerea.value = response.data.error;
       loading.value = false;
+      console.log("登录失败，状态:", response.status);
     }
   } catch (error) {
     if (error.response && error.response.status === 500) {
       failure.value = true;
       failurerea.value = error.response.data.error;
-      loading.value = false;
     } else {
       failure.value = true;
-      console.error("Login failed:", error);
+      console.error("登录失败:", error);
       failurerea.value = error;
-      loading.value = false;
     }
+    loading.value = false;
   }
 }
 
+// 重定向到主页
 const redirectToHome = () => {
   router.push('..');
 }
 
+// 挂载时生命周期钩子
 onMounted(async () => {
   if (Cookies.get('token')) {
     redirectToHome();
   } else if (route.query.code) {
     loading.value = true;
-    callback(route.query.code).finally(() => {
+    callback(route.query.code as string).finally(() => {
       loading.value = false;
     });
   }
-})
-
+});
 </script>

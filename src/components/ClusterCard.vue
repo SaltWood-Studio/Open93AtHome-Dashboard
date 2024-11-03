@@ -91,7 +91,7 @@ const props = defineProps({
     required: true,
   },
   sponsor: {
-    type: Boolean,
+    type: String,
     required: true,
   },
   sponsorUrl: {

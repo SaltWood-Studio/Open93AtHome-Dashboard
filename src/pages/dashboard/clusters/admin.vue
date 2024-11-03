@@ -82,12 +82,8 @@
                 ></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="createDialog = false" color="grey" text>
-                    取消
-                </v-btn>
-                <v-btn @click="create" color="primary">
-                    创建
-                </v-btn>
+                <v-btn @click="createDialog = false" color="grey" text="取消"/>
+                <v-btn @click="create" color="primary" text="创建"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -125,12 +121,8 @@
                 ></v-checkbox>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="editDialog = false" color="grey" text>
-                    取消
-                </v-btn>
-                <v-btn @click="update" color="primary">
-                    更新
-                </v-btn>
+                <v-btn @click="editDialog = false" color="grey" text="取消"/>
+                <v-btn @click="update" color="primary" text="更新"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -147,12 +139,8 @@
                 <v-text-field label="Secret" v-model="newClusterSecret" readonly></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="copyNewCluster" color="blue" text>
-                    复制
-                </v-btn>
-                <v-btn @click="showInfoDialog = false" color="grey" text>
-                    关闭
-                </v-btn>
+                <v-btn @click="copyNewCluster" color="blue" text="复制"/>
+                <v-btn @click="showInfoDialog = false" color="grey" text="关闭"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -174,7 +162,7 @@
                 ></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="shardsDialog = false" color="grey" text>取消</v-btn>
+                <v-btn @click="shardsDialog = false" color="grey" text="取消"/>
                 <v-btn @click="confirmShards" color="primary">确认</v-btn>
             </v-card-actions>
         </v-card>
@@ -190,54 +178,55 @@
                 <span style="font-weight: bold;">您确定要删除所选节点吗？</span>
             </v-card-text>
             <v-card-actions>
-                <v-btn @click="removeClusters" color="grey" text>确认</v-btn>
-                <v-btn @click="removeDialog = false" color="red" text>取消</v-btn>
+                <v-btn @click="removeClusters" color="grey" text="确认"/>
+                <v-btn @click="removeDialog = false" color="red" text="取消"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
-<script setup>
-import { ref, onMounted, computed, isProxy } from 'vue';
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { Cluster } from '@/types/ClusterModel';
 
-const items = ref([]);
-const selected = ref([]);
-const snackbar = ref(false);
-const modifytext = ref('');
-const createDialog = ref(false);
-const editDialog = ref(false);
-const shardsDialog = ref(false);
-const showInfoDialog = ref(false);
-const removeDialog = ref(false);
+const items = ref<Cluster[]>([]);
+const selected = ref<string[]>([]);
+const snackbar = ref<boolean>(false);
+const modifytext = ref<string>('');
+const createDialog = ref<boolean>(false);
+const editDialog = ref<boolean>(false);
+const shardsDialog = ref<boolean>(false);
+const showInfoDialog = ref<boolean>(false);
+const removeDialog = ref<boolean>(false);
 
-const newClusterName = ref('');
-const newBandwidth = ref(null);
+const newClusterName = ref<string>('');
+const newBandwidth = ref<number | null>(null);
 
-const editClusterName = ref('');
-const editBandwidth = ref(null);
-const editSponsor = ref('');
-const editSponsorUrl = ref('');
-const editProxy = ref(false);
-const editMasterStats = ref(false);
+const editClusterName = ref<string>('');
+const editBandwidth = ref<number | null>(null);
+const editSponsor = ref<string>('');
+const editSponsorUrl = ref<string>('');
+const editProxy = ref<boolean>(false);
+const editMasterStats = ref<boolean>(false);
 
-const newClusterId = ref('');
-const newClusterSecret = ref('');
+const newClusterId = ref<string>('');
+const newClusterSecret = ref<string>('');
 
-const shards = ref(0); // 32个复选框的状态
+const shards = ref<number>(0); // 32个复选框的状态
 
 const canEdit = computed(() => selected.value.length === 1);
 
-const copyNewCluster = () => {
+const copyNewCluster = (): void => {
     navigator.clipboard.writeText(`ID: ${newClusterId.value}\nSecret: ${newClusterSecret.value}`);
     modifytext.value = '复制成功';
     snackbar.value = true;
 };
 
-const getlist = async () => {
+const getlist = async (): Promise<void> => {
     try {
         const response = await axios.get('/api/admin/all_clusters');
-        items.value = response.data.map(item => ({
+        items.value = response.data.map((item: any) => ({
             clusterId: item.clusterId,
             clusterName: item.clusterName,
             bandwidth: item.bandwidth,
@@ -249,13 +238,13 @@ const getlist = async () => {
     } catch (error) {
         console.error('Failed to fetch data:', error);
     }
-}
+};
 
-const openCreateDialog = () => {
+const openCreateDialog = (): void => {
     createDialog.value = true;
-}
+};
 
-const create = async () => {
+const create = async (): Promise<void> => {
     try {
         const response = await axios.post('/api/clusters', {
             name: newClusterName.value,
@@ -284,9 +273,9 @@ const create = async () => {
         snackbar.value = true;
         console.error("Failed to create cluster:", error);
     }
-}
+};
 
-const openEditDialog = () => {
+const openEditDialog = (): void => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         const cluster = items.value.find(item => item.clusterId === clusterId);
@@ -300,19 +289,19 @@ const openEditDialog = () => {
             editMasterStats.value = cluster.isMasterStats;
         }
     }
-}
+};
 
-const update = async () => {
+const update = async (): Promise<void> => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         try {
-            const requestBody = {
+            const requestBody: Record<string, any> = {
                 name: editClusterName.value || undefined,
-                bandwidth: editBandwidth.value ? Number(editBandwidth.value) : undefined,
+                bandwidth: editBandwidth.value !== null ? Number(editBandwidth.value) : undefined,
                 sponsor: editSponsor.value || undefined,
                 sponsorUrl: editSponsorUrl.value || undefined,
-                isProxy: editProxy.value || false,
-                isMasterStats: editMasterStats.value || false
+                isProxy: editProxy.value,
+                isMasterStats: editMasterStats.value
             };
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
@@ -336,9 +325,9 @@ const update = async () => {
             console.error("Failed to update cluster:", error);
         }
     }
-}
+};
 
-const ban = async () => {
+const ban = async (): Promise<void> => {
     const clusterIdsToBan = selected.value;
 
     try {
@@ -368,7 +357,7 @@ const ban = async () => {
     }
 };
 
-const unban = async () => {
+const unban = async (): Promise<void> => {
     const clusterIdsToUnban = selected.value;
 
     try {
@@ -399,32 +388,30 @@ const unban = async () => {
 };
 
 // 打开分片对话框
-const openShardsDialog = () => {
+const openShardsDialog = (): void => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         const cluster = items.value.find(item => item.clusterId === clusterId);
         if (cluster) {
             shards.value = cluster.shards;  // 读取当前节点的分片数量
             shardsDialog.value = true;
-        }
-        else {
+        } else {
             console.error(`Failed to find cluster with id ${clusterId}`);
         }
     }
 };
 
 // 确认修改分片
-const confirmShards = async () => {
+const confirmShards = async (): Promise<void> => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         try {
-            const shardsValue = shards.value;  // 将布尔数组转换为整数
+            const shardsValue = shards.value;  // 读取分片值
             await axios.put(`/api/clusters/${clusterId}/shards`, { shards: shardsValue });
 
             modifytext.value = "成功修改分片";
             snackbar.value = true;
             shardsDialog.value = false;  // 关闭对话框
-
         } catch (error) {
             modifytext.value = `修改分片失败: ${error}`;
             snackbar.value = true;
@@ -432,9 +419,9 @@ const confirmShards = async () => {
         }
         await getlist();  // 刷新列表
     }
-}
+};
 
-const kick = async () => {
+const kick = async (): Promise<void> => {
     const clusterIdsToKick = selected.value;
 
     try {
@@ -452,11 +439,11 @@ const kick = async () => {
     }
 };
 
-const openRemoveDialog = () => {
+const openRemoveDialog = (): void => {
     removeDialog.value = true;  // 打开删除确认对话框
-}
+};
 
-const removeClusters = async () => {
+const removeClusters = async (): Promise<void> => {
     try {
         await axios.delete(`/api/clusters/${selected.value}`);
         modifytext.value = "成功删除节点";
@@ -470,10 +457,10 @@ const removeClusters = async () => {
         snackbar.value = true;
         console.error("Failed to remove clusters:", error);
     }
-}
+};
 
 onMounted(async () => {
-    getlist();
+    await getlist();
 });
 </script>
 

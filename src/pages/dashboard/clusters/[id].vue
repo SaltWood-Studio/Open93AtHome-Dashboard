@@ -77,8 +77,8 @@
                 <v-text-field class="mt-4" v-model="clusterId" label="ClusterId" required></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn text @click="showInput = false">取消</v-btn>
-                <v-btn text @click="unbind">确认</v-btn>
+                <v-btn text="取消" @click="showInput = false"/>
+                <v-btn text="确认" @click="unbind"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -91,7 +91,7 @@
                 <p>请妥善保管您的密钥，切勿透露给他人！</p>
             </v-card-text>
             <v-card-actions>
-                <v-btn text @click="showNewSecret = false; newSecret = ''">确认</v-btn>
+                <v-btn text="确认" @click="showNewSecret = false; newSecret = ''"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -107,35 +107,38 @@
                 <v-text-field class="mt-4" v-model="confirmName" label="节点名称" required></v-text-field>
             </v-card-text>
             <v-card-actions>
-                <v-btn text @click="showResetDialog = false">取消</v-btn>
-                <v-btn text @click="resetSecret">确认</v-btn>
+                <v-btn text="取消" @click="showResetDialog = false"/>
+                <v-btn text="确认" @click="resetSecret"/>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Cluster } from '@/types/ClusterModel';
 
+// 设置响应变量
 const router = useRouter();
 const route = useRoute();
 
-const activeTab = ref(0)
-const cluster = ref({})
-const modify = ref(false)
-const snackbar = ref(false)
-const modifytext = ref('')
-const showInput = ref(false)
-const showResetDialog = ref(false)
-const showNewSecret = ref(false)
-const clusterId = ref('')
-const confirmName = ref('')
-const newSecret = ref('')
+const activeTab = ref<number>(0);
+const cluster = ref<Cluster | null>(null);
+const modify = ref<boolean>(false);
+const snackbar = ref<boolean>(false);
+const modifytext = ref<string>('');
+const showInput = ref<boolean>(false);
+const showResetDialog = ref<boolean>(false);
+const showNewSecret = ref<boolean>(false);
+const clusterId = ref<string>('');
+const confirmName = ref<string>('');
+const newSecret = ref<string>('');
 
-const formatCreatedAt = (createdAt) => {
+// 格式化 createdAt 日期
+const formatCreatedAt = (createdAt: string): string => {
     const date = new Date(createdAt);
     const chinaTime = new Date(date.getTime());
 
@@ -149,40 +152,43 @@ const formatCreatedAt = (createdAt) => {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
+// 获取集群数据
 const getclusters = async () => {
     try {
-        const response = await axios.get(`/api/user/clusters/${route.params.id}`);
+        const response = await axios.get<Cluster>(`/api/user/clusters/${route.params.id}`);
         cluster.value = response.data;
     } catch (error) {
-        console.error('Failed to fetch data:', error);
+        console.error('获取数据失败:', error);
     }
 }
 
+// 修改集群信息
 const modifyinf = async () => {
     modify.value = !modify.value;
 
     if (!modify.value) {
         try {
-            const modifyres = await axios.put(`/api/user/clusters/${cluster.value.clusterId}`, {
-                name: cluster.value.clusterName,
-                bandwidth: cluster.value.bandwidth,
-                sponsor: cluster.value.sponsor,
-                sponsorUrl: cluster.value.sponsorUrl,
+            const modifyres = await axios.put(`/api/user/clusters/${cluster.value?.clusterId}`, {
+                name: cluster.value?.clusterName,
+                bandwidth: cluster.value?.bandwidth,
+                sponsor: cluster.value?.sponsor,
+                sponsorUrl: cluster.value?.sponsorUrl,
             });
             modifytext.value = "成功修改信息";
             snackbar.value = true;
         } catch (error) {
             modifytext.value = `修改信息失败: ${error}`;
             snackbar.value = true;
-            console.error("Failed to modify cluster information:", error);
+            console.error("修改集群信息失败:", error);
         }
     }
 };
 
+// 解绑集群
 const unbind = async () => {
-    if (cluster.value.clusterId === clusterId.value) {
+    if (cluster.value?.clusterId === clusterId.value) {
         try {
-            const unbind = await axios.post(`/api/user/clusters/${cluster.value.clusterId}/unbind`);
+            await axios.post(`/api/user/clusters/${cluster.value.clusterId}/unbind`);
             modifytext.value = "成功解绑";
             snackbar.value = true;
             showInput.value = false;
@@ -193,7 +199,7 @@ const unbind = async () => {
             modifytext.value = `解绑失败: ${error}`;
             snackbar.value = true;
             showInput.value = false;
-            console.error("Failed to modify cluster information:", error);
+            console.error("修改集群信息失败:", error);
         }
     } else {
         modifytext.value = `输入的 ID 不一致`;
@@ -201,10 +207,11 @@ const unbind = async () => {
     }
 }
 
+// 重置密钥
 const resetSecret = async () => {
-    if (confirmName.value === cluster.value.clusterName) {
+    if (confirmName.value === cluster.value?.clusterName) {
         try {
-            const response = await axios.post(`/api/user/clusters/${cluster.value.clusterId}/reset_secret`);
+            const response = await axios.post<{ secret: string }>(`/api/user/clusters/${cluster.value.clusterId}/reset_secret`);
             modifytext.value = "成功重置密钥";
             showResetDialog.value = false;
             newSecret.value = response.data.secret;
@@ -213,7 +220,7 @@ const resetSecret = async () => {
             modifytext.value = `重置密钥失败: ${error}`;
             snackbar.value = true;
             showResetDialog.value = false;
-            console.error("Failed to reset secret:", error);
+            console.error("重置密钥失败:", error);
         }
     } else {
         modifytext.value = `节点名称不匹配`;
@@ -221,13 +228,14 @@ const resetSecret = async () => {
     }
 }
 
+// 挂载时生命周期钩子
 onMounted(async () => {
     if (Cookies.get('token')) {
-        getclusters();
+        await getclusters();
     } else {
         router.push({ path: '/dashboard/auth/login' });
     }
-})
+});
 </script>
 
 <route lang="yaml">

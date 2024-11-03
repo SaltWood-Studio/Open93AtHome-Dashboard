@@ -79,41 +79,60 @@
   <!-- Ray、浮杨和米露大佬保佑我 Dash 永不报错，永不出 Bug -->
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
 import AreaChartCard from '@/components/AreaChartCard.vue';
 
 const elements = 15;
-const uptime = ref('');
+const uptime = ref<string>('');
 
-const charts = ref([
+interface Chart {
+  title: string;
+  subtitle: string;
+  data: number[];
+  unit: string;
+  color?: string;
+  areaColor?: string;
+  xAxis?: string[];
+}
+
+const charts = ref<Chart[]>([
   { title: '全网流量', subtitle: '', data: Array(elements).fill(0), unit: '', color: "orange", areaColor: "rgba(255, 152, 0, 0.15)" },
   { title: '全网请求数', subtitle: '', data: Array(elements).fill(0), unit: '', color: "rgb(63, 81, 192)", areaColor: "rgba(63, 81, 192, 0.15)" },
   { title: '被拒绝请求趋势', subtitle: '', data: Array(24).fill(0), unit: '次', xAxis: Array.from({ length: 24 }, (_, index) => `${index}时`) },
 ]);
 
-const doubleCharts = ref([
-  { title: '今日请求/流量分布', subtitle: '', data: Array(24).fill(0), units: [], colors: ["rgb(63, 81, 192)", "rgb(7, 200, 19)"], areaColors: ["rgba(63, 81, 192, 0.3)", "rgba(7, 200, 19, 0.3)"] },
+interface DoubleChart {
+  title: string;
+  subtitle: string;
+  data: [number, number][];
+  units: string[];
+  colors: string[];
+  areaColors: string[];
+}
+
+const doubleCharts = ref<DoubleChart[]>([
+  { title: '今日请求/流量分布', subtitle: '', data: Array(24).fill(0).map(() => [0, 0]), units: [], colors: ["rgb(63, 81, 192)", "rgb(7, 200, 19)"], areaColors: ["rgba(63, 81, 192, 0.3)", "rgba(7, 200, 19, 0.3)"] },
 ]);
 
-const todayHits = ref('');
-const todayBytes = ref('');
-const onlines = ref('');
-const sourceCount = ref('');
-const totalFiles = ref('');
-const totalSize = ref('');
-let uptimeInterval;
+const todayHits = ref<string>('');
+const todayBytes = ref<string>('');
+const onlines = ref<string>('');
+const sourceCount = ref<string>('');
+const totalFiles = ref<string>('');
+const totalSize = ref<string>('');
+let uptimeInterval: NodeJS.Timeout | null;
 
-const formataBytes = (bytes) => {
+const formataBytes = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return '0 Bytes';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-function convertArrayElements(array) {
+function convertArrayElements(array: number[]): { converted: string[]; targetUnit: string } {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
   // 找到数组中的最大字节值
@@ -132,7 +151,7 @@ function convertArrayElements(array) {
   return { converted: convertedArray, targetUnit };
 }
 
-const formatDuration = (startTime) => {
+const formatDuration = (startTime: number): string => {
   if (typeof startTime !== 'number' || startTime <= 0) {
     throw new Error('Invalid start time');
   }
@@ -153,7 +172,7 @@ const formatDuration = (startTime) => {
   ].join(':');
 };
 
-const getstatistics = async () => {
+const getstatistics = async (): Promise<void> => {
   try {
     const statisticsResponse = await axios.get('/api/stats/center');
     todayHits.value = statisticsResponse.data.today.hits;
@@ -165,7 +184,10 @@ const getstatistics = async () => {
     totalFiles.value = statisticsResponse.data.totalFiles;
     totalSize.value = formataBytes(statisticsResponse.data.totalSize);
     uptime.value = formatDuration(statisticsResponse.data.startTime);
-    uptimeInterval = setInterval(() => uptime.value = formatDuration(statisticsResponse.data.startTime), 1000); // 每秒更新1次
+    
+    uptimeInterval = setInterval(() => {
+      uptime.value = formatDuration(statisticsResponse.data.startTime);
+    }, 1000); // 每秒更新1次
 
     // 图表
     const hourlyHits = (statisticsResponse.data.hourly[0] || []).slice(0, 24);
@@ -176,7 +198,7 @@ const getstatistics = async () => {
     const rejected = statisticsResponse.data.rejected.slice(0, 24);
 
     charts.value[0].subtitle = `每日流量分布 (${dailyBytes.targetUnit})`;
-    charts.value[0].data = dailyBytes.converted;
+    charts.value[0].data = dailyBytes.converted.map(Number);
     charts.value[0].unit = dailyBytes.targetUnit;
 
     charts.value[1].subtitle = "每日请求分布 (次)";
@@ -196,7 +218,7 @@ const getstatistics = async () => {
 };
 
 onMounted(async () => {
-  getstatistics();
+  await getstatistics();
 });
 
 onBeforeUnmount(() => {

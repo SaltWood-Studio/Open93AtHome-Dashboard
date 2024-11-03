@@ -26,7 +26,7 @@
               </v-chip>
             </template>
             <template v-slot:item.action="{ item }">
-              <v-btn @click="openDialog(item.id)" color="primary" small>查看统计</v-btn>
+              <v-btn @click="openDialog(item.clusterId)" color="primary" small>查看统计</v-btn>
             </template>
           </v-data-table>
         </v-card-text>
@@ -49,12 +49,13 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
+import { Cluster } from '@/types/ClusterModel';
 
-const headers = ref([
+const headers = ref<{ title: string; value: string; sortable?: boolean }[]>([
   { title: '节点名次', value: 'rank' },
   { title: '名称', value: 'name' },
   { title: '请求数', value: 'hits' },
@@ -63,24 +64,24 @@ const headers = ref([
   { title: '节点赞助商', value: 'sponsor' },
   { title: '节点类型', value: 'fullsize' },
   { title: '在线状态', value: 'isOnline' },
-  { title: '操作', value: 'action', sortable: false } // 添加操作列
+  { title: '操作', value: 'action', sortable: false }
 ]);
 
-const units = ref(["次", "Bytes"]);
-const items = ref([]);
-const dialog = ref(false);  // 控制弹出窗口的显示与隐藏
-const selectedClusterData = ref(null);  // 用于存储点击后的统计数据
-const selectedClusterTitle = ref('');  // 用于显示点击的节点名称
-const xAxisData = ref([]);  // 用于双图表的 x 轴数据
+const units = ref<string[]>(["次", "Bytes"]);
+const items = ref<Cluster[]>([]);
+const dialog = ref<boolean>(false);  // 控制弹出窗口的显示与隐藏
+const selectedClusterData = ref<number[][] | null>(null);  // 用于存储点击后的统计数据
+const selectedClusterTitle = ref<string>('');  // 用于显示点击的节点名称
+const xAxisData = ref<string[]>([]);  // 用于双图表的 x 轴数据
 
-const formatBytes = (bytes) => {
+const formatBytes = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return '0 Bytes';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-function convertArrayElements(array) {
+function convertArrayElements(array: number[]): { converted: string[]; targetUnit: string } {
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
   // 找到数组中的最大字节值
@@ -104,7 +105,7 @@ onMounted(async () => {
     const response = await axios.get('/api/clusters');
     items.value = response.data.map((item, index) => ({
       rank: index + 1,
-      id: item.clusterId,
+      clusterId: item.clusterId,
       name: item.clusterName,
       hits: item.hits !== null ? item.hits : 0,
       bytes: formatBytes(item.bytes !== null ? item.bytes : 0),
@@ -120,24 +121,24 @@ onMounted(async () => {
   }
 });
 
-const openDialog = async (clusterId) => {
+const openDialog = async (clusterId: string): Promise<void> => {
   try {
     const response = await axios.get(`/api/stats/cluster/${clusterId}`);
     const hits = response.data.hits;
     const data = convertArrayElements(response.data.bytes);
     const bytes = data.converted;
     units.value[1] = data.targetUnit;
-    selectedClusterData.value = hits.map((item, index) => [item, bytes[index]]);
-    const cluster = items.value.find(item => item.id === clusterId);
-    selectedClusterTitle.value = cluster.name;
+    selectedClusterData.value = hits.map((item: number, index: number) => [item, bytes[index]]);
+    const cluster = items.value.find(item => item.clusterId === clusterId);
+    selectedClusterTitle.value = cluster?.name || '';
     dialog.value = true;
-    xAxisData.value = response.data.dates.map(item => `${item.split('-').at(-1).replace(/^0+/, '')}日`);
+    xAxisData.value = response.data.dates.map((item: string) => `${item.split('-').at(-1).replace(/^0+/, '')}日`);
   } catch (error) {
     console.error('Failed to fetch cluster statistics:', error);
   }
 };
 
-const closeDialog = () => {
+const closeDialog = (): void => {
   dialog.value = false;
 };
 </script>

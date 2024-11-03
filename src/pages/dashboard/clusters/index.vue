@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" md="8" lg="4" v-for="(card, index) in cards" :key="index">
-      <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endPoint"
+      <ClusterCard :clusterId="card.clusterId" :clusterName="card.clusterName" :endPoint="card.endpoint"
         :bandwidth="card.bandwidth" :createdAt="card.createdAt" :isOnline="card.isOnline" :isBanned="card.isBanned"
         :sponsor="card.sponsor" :sponsorUrl="card.sponsorUrl" :fullsize="card.fullsize"/>
     </v-col>
@@ -29,8 +29,8 @@
         <v-text-field v-model="clusterSecret" label="ClusterSecret" required></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="cancel">取消</v-btn>
-        <v-btn text @click="bindcluster">提交</v-btn>
+        <v-btn text="取消" @click="cancel"/>
+        <v-btn text="提交" @click="bindcluster"/>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -57,7 +57,7 @@
         节点ID {{ clusterId }} 已绑定到您的账号上
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="bindsuccess">确认</v-btn>
+        <v-btn text="确认" @click="bindsuccess"/>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -68,28 +68,29 @@
         {{ failurerea }}
       </v-card-text>
       <v-card-actions>
-        <v-btn text @click="cancel">确认</v-btn>
+        <v-btn text="确认" @click="cancel"/>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import ClusterCard from '@/components/ClusterCard.vue';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Cluster } from '@/types/ClusterModel';
 
-const cards = ref([]);
-const showInput = ref(false);
-const loading = ref(false);
-const successDialog = ref(false);
-const errorDialog = ref(false);
-const clusterId = ref('');
-const clusterSecret = ref('');
-const failurerea = ref('');
+const cards = ref<Cluster[]>([]);
+const showInput = ref<boolean>(false);
+const loading = ref<boolean>(false);
+const successDialog = ref<boolean>(false);
+const errorDialog = ref<boolean>(false);
+const clusterId = ref<string>('');
+const clusterSecret = ref<string>('');
+const failurerea = ref<string>('');
 
-const cancel = () => {
+const cancel = (): void => {
   showInput.value = false;
   loading.value = false;
   successDialog.value = false;
@@ -98,12 +99,12 @@ const cancel = () => {
   clusterSecret.value = '';
 };
 
-const bindsuccess = () => {
+const bindsuccess = (): void => {
   cancel();
   location.reload();
 };
 
-const bindcluster = async () => {
+const bindcluster = async (): Promise<void> => {
   loading.value = true;
   try {
     const Url = `/api/user/clusters/bind`;
@@ -133,7 +134,7 @@ const bindcluster = async () => {
   }
 };
 
-const formatCreatedAt = (createdAt) => {
+const formatCreatedAt = (createdAt: string): string => {
   const date = new Date(createdAt);
   const chinaTime = new Date(date.getTime());
 
@@ -145,12 +146,12 @@ const formatCreatedAt = (createdAt) => {
   const seconds = String(chinaTime.getSeconds()).padStart(2, '0');
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
+};
 
-const getclusters = async () => {
+const getclusters = async (): Promise<void> => {
   try {
     const response = await axios.get('/api/user/clusters');
-    cards.value = response.data.map((item) => ({
+    cards.value = response.data.map((item: any) => ({
       clusterId: item.clusterId,
       clusterName: item.clusterName,
       endPoint: item.endpoint && item.port ? `${item.endpoint}:${item.port}` : null,
@@ -171,7 +172,8 @@ onMounted(async () => {
   if (Cookies.get('token')) {
     await getclusters();
   } else {
-    this.$router.push({ path: '/dashboard/auth/login' });
+    // 使用 Vue Router 进行重定向
+    window.location.href = '/dashboard/auth/login'; // 使用 window.location.href 代替 this.$router.push
   }
 });
 </script>

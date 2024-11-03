@@ -82,21 +82,27 @@
   </v-container>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 
-// 响应式数据
-const sources = ref([]);
-const search = ref(""); // 搜索框输入
-const error = ref(""); // 错误信息
-const showDialog = ref(false); // 控制更新确认对话框的显示
-const snackbar = ref(false); // 控制Snackbar的显示
-const snackbarMessage = ref(""); // Snackbar消息
+interface Source {
+  name: string;
+  imageExists?: boolean;
+  lastUpdated: string;
+  count: number;
+}
+
+const sources = ref<Source[]>([]);
+const search = ref<string>("");
+const error = ref<string>("");
+const showDialog = ref<boolean>(false);
+const snackbar = ref<boolean>(false);
+const snackbarMessage = ref<string>("");
 
 // 格式化日期函数
-const formatDate = (dateString) => {
-  const options = {
+const formatDate = (dateString: string): string => {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -109,7 +115,7 @@ const formatDate = (dateString) => {
 };
 
 // 获取同步源信息
-const checkImage = async (source) => {
+const checkImage = async (source: Source): Promise<void> => {
   try {
     await axios.get(`/assets/sources/${source.name}.png`);
     source.imageExists = true;
@@ -118,9 +124,9 @@ const checkImage = async (source) => {
   }
 };
 
-const fetchSources = async () => {
+const fetchSources = async (): Promise<void> => {
   try {
-    const response = await axios.get("/api/stats/source");
+    const response = await axios.get<Source[]>("/api/stats/source");
     sources.value = response.data;
 
     for (const source of sources.value) {
@@ -139,7 +145,7 @@ const filteredSources = computed(() => {
 });
 
 // 文件更新的 POST 请求
-const updateFiles = async () => {
+const updateFiles = async (): Promise<void> => {
   try {
     const response = await axios.post("/api/admin/update");
 
