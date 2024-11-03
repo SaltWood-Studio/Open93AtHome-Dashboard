@@ -12,14 +12,14 @@
 import config from "../package.json";
 
 const about = String.raw`
-This dashboard is created by Mxmilu666 and SaltWood, for Open93AtHome-V3.
-Current version: ${config.version}
+This dashboard is created by Mxmilu666 and SaltWood for the Open93AtHome-V3 project. 
+Current version: ${config.version}.
 
-Open93AtHome-V3 is a project that aims to act as a file-delivery network's center server,
+Open93AtHome-V3 is a project that aims to act as a center server for a file-delivery network,
     and this dashboard is one of the front-end components of the project.
 
-This software follows the MIT license.
-Copyright (c) 2024 Mxmilu666 & SaltWood
+This software follows the MIT license. 
+Copyright (c) 2024 Mxmilu666 & SaltWood.
 
 https://github.com/SaltWood-Studio/Open93AtHome-V3
 https://github.com/SaltWood-Studio/Open93AtHome-Dashboard
