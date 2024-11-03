@@ -154,7 +154,7 @@ const getclusters = async (): Promise<void> => {
     cards.value = response.data.map((item: any) => ({
       clusterId: item.clusterId,
       clusterName: item.clusterName,
-      endPoint: item.endpoint && item.port ? `${item.endpoint}:${item.port}` : null,
+      endpoint: item.endpoint && item.port ? `${item.endpoint}:${item.port}` : null,
       bandwidth: item.bandwidth,
       createdAt: formatCreatedAt(item.createdAt),
       isOnline: item.isOnline,
