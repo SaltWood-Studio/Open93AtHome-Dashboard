@@ -1,5 +1,15 @@
 <template>
   <v-container>
+    <v-card width="90%" height="90%" class="text-center" style="display: flex; 
+      align-items: center; 
+      justify-content: center;">
+      <v-card-actions class="pa-2" style="position: absolute; top: 0; left: 0;">
+        <v-btn icon @click="back" color="indigo">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+
     <!-- Sponsor Title -->
     <v-row justify="center">
       <v-col class="text-center">
@@ -74,6 +84,11 @@ const traffic = {
 }
 
 const route = useRoute();
+const router = useRouter();
+
+function back() {
+    router.go(-1);
+}
 
 function handleImageError() {
     imageError.value = true;
