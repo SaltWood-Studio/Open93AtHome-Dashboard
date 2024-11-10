@@ -54,15 +54,15 @@ const chartRef = ref(null);
 const initChart = async () => {
   if (chartRef.value) {
     // 动态加载 ECharts 核心模块及相关组件
-    const { default: echarts } = await import('echarts/core');
+    const { use, init } = await import('echarts');
     const { LineChart } = await import('echarts/charts');
     const { TitleComponent, TooltipComponent, GridComponent } = await import('echarts/components');
     const { CanvasRenderer } = await import('echarts/renderers');
 
     // 注册所需要的组件和图表
-    echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
+    use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
 
-    const myChart = echarts.init(chartRef.value);
+    const myChart = init(chartRef.value);
 
     const today = new Date();
     let dates = props.xAxis;
