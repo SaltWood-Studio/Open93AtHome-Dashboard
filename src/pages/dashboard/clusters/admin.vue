@@ -28,7 +28,7 @@
         <template v-slot:item.noWarden="{ item }">
             <v-chip :color="item.noWarden ? 'red' : 'green'"
                 :prepend-icon="item.noWarden ? 'mdi-alert-outline' : 'mdi-check'" label>
-                {{ item.noWarden ? '禁用巡检' : '正常' }}
+                {{ item.noWarden ? '禁用巡检' : '正常巡检' }}
             </v-chip>
         </template>
     </v-data-table>
