@@ -306,7 +306,7 @@ const update = async (): Promise<void> => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         try {
-            if (checkName(editClusterName.value) || checkName(editSponsor.value) || checkName(editSponsorUrl.value) || checkName(editSponsorBanner.value)) {
+            if (!checkName(editClusterName.value) || !checkName(editSponsor.value) || !checkName(editSponsorUrl.value) || !checkName(editSponsorBanner.value)) {
                 modifytext.value = "名称不能包含特殊字符";
                 snackbar.value = true;
                 return;

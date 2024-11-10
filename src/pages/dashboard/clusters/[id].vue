@@ -156,7 +156,7 @@ const modifyinf = async () => {
 
     if (!modify.value) {
         try {
-            if (checkName(cluster.value?.clusterName) || checkName(cluster.value?.sponsor) || checkName(cluster.value?.sponsorUrl) || checkName(cluster.value?.sponsorBanner)) {
+            if (!checkName(cluster.value?.clusterName) || !checkName(cluster.value?.sponsor) || !checkName(cluster.value?.sponsorUrl) || !checkName(cluster.value?.sponsorBanner)) {
                 modifytext.value = "名称不能包含特殊字符";
                 snackbar.value = true;
                 return;
