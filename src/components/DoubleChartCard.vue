@@ -8,8 +8,12 @@
   </v-card>
 </template>
   
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import * as echarts from 'echarts/core';
+import { LineChart } from 'echarts/charts';
+import { TitleComponent, TooltipComponent, GridComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
 
 // Props definition
 const props = defineProps({
@@ -50,19 +54,11 @@ const props = defineProps({
 const chartRef = ref(null);
 const xAxis = ref(props.xAxis);
 
-// 按需加载 ECharts 模块和组件
 const initChart = async () => {
   if (chartRef.value) {
-    // 动态加载 ECharts 核心模块及相关组件
-    const { use, init } = await import('echarts');
-    const { LineChart } = await import('echarts/charts');
-    const { TitleComponent, TooltipComponent, GridComponent } = await import('echarts/components');
-    const { CanvasRenderer } = await import('echarts/renderers');
+    echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
 
-    // 注册所需要的组件和图表
-    use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
-
-    const myChart = init(chartRef.value);
+    const myChart = echarts.init(chartRef.value);
 
     const xAxisData = xAxis.value; // X轴为0时到23时
   

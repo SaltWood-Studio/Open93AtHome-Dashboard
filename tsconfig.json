@@ -5,6 +5,7 @@
     "module": "ES2022",
     "baseUrl": "./",
     "moduleResolution": "bundler",
+    "outDir": "dist",  // 指定输出目录
     "paths": {
       "@/*": [
         "src/*"
@@ -15,6 +16,14 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
-  }
+    ],
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

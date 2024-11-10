@@ -32,6 +32,7 @@ export default defineConfig({
         }],
       },
     }),
+    
   ],
   define: { 'process.env': {} },
   resolve: {
@@ -51,4 +52,18 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/vue')) {
+            return 'vue';  // Vue 单独打包
+          }
+          if (id.includes('node_modules/echarts')) {
+            return 'echarts';  // Echarts 单独打包
+          }
+        }
+      }
+    }
+  }  
 })
