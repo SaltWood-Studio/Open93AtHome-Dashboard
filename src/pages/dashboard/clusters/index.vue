@@ -80,6 +80,7 @@ import ClusterCard from '@/components/ClusterCard.vue';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Cluster } from '@/types/ClusterModel';
+import { formatCreatedAt } from '@/types/Utilities';
 
 const cards = ref<Cluster[]>([]);
 const showInput = ref<boolean>(false);
@@ -134,20 +135,6 @@ const bindcluster = async (): Promise<void> => {
   }
 };
 
-const formatCreatedAt = (createdAt: string): string => {
-  const date = new Date(createdAt);
-  const chinaTime = new Date(date.getTime());
-
-  const year = chinaTime.getFullYear();
-  const month = String(chinaTime.getMonth() + 1).padStart(2, '0');
-  const day = String(chinaTime.getDate()).padStart(2, '0');
-  const hours = String(chinaTime.getHours()).padStart(2, '0');
-  const minutes = String(chinaTime.getMinutes()).padStart(2, '0');
-  const seconds = String(chinaTime.getSeconds()).padStart(2, '0');
-
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
-
 const getclusters = async (): Promise<void> => {
   try {
     const response = await axios.get('/api/user/clusters');
@@ -162,6 +149,7 @@ const getclusters = async (): Promise<void> => {
       fullsize: item.fullsize,
       sponsor: item.sponsor,
       sponsorUrl: item.sponsorUrl,
+      sponsorBanner: item.sponsorBanner,
     }));
   } catch (error) {
     console.error('Failed to fetch data:', error);

@@ -122,6 +122,7 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Cluster } from '@/types/ClusterModel';
+import { checkName, formatCreatedAt } from '@/types/Utilities';
 
 // 设置响应变量
 const router = useRouter();
@@ -139,21 +140,6 @@ const clusterId = ref<string>('');
 const confirmName = ref<string>('');
 const newSecret = ref<string>('');
 
-// 格式化 createdAt 日期
-const formatCreatedAt = (createdAt: string): string => {
-    const date = new Date(createdAt);
-    const chinaTime = new Date(date.getTime());
-
-    const year = chinaTime.getFullYear();
-    const month = String(chinaTime.getMonth() + 1).padStart(2, '0');
-    const day = String(chinaTime.getDate()).padStart(2, '0');
-    const hours = String(chinaTime.getHours()).padStart(2, '0');
-    const minutes = String(chinaTime.getMinutes()).padStart(2, '0');
-    const seconds = String(chinaTime.getSeconds()).padStart(2, '0');
-
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-}
-
 // 获取集群数据
 const getclusters = async () => {
     try {
@@ -170,6 +156,11 @@ const modifyinf = async () => {
 
     if (!modify.value) {
         try {
+            if (checkName(cluster.value?.clusterName) || checkName(cluster.value?.sponsor) || checkName(cluster.value?.sponsorUrl) || checkName(cluster.value?.sponsorBanner)) {
+                modifytext.value = "名称不能包含特殊字符";
+                snackbar.value = true;
+                return;
+            }
             const modifyres = await axios.put(`/api/user/clusters/${cluster.value?.clusterId}`, {
                 name: cluster.value?.clusterName,
                 bandwidth: cluster.value?.bandwidth,

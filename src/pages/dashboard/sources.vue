@@ -85,6 +85,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import { formatDate } from "@/types/Utilities";
 
 interface Source {
   name: string;
@@ -100,19 +101,6 @@ const showDialog = ref<boolean>(false);
 const snackbar = ref<boolean>(false);
 const snackbarMessage = ref<string>("");
 
-// 格式化日期函数
-const formatDate = (dateString: string): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    timeZoneName: "short",
-  };
-  return new Date(dateString).toLocaleDateString("zh-CN", options);
-};
 
 // 获取同步源信息
 const checkImage = async (source: Source): Promise<void> => {

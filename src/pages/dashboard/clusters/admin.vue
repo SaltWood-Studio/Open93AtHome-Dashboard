@@ -193,6 +193,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { Cluster } from '@/types/ClusterModel';
+import { checkName } from '@/types/Utilities';
 
 const items = ref<Cluster[]>([]);
 const selected = ref<string[]>([]);
@@ -301,6 +302,12 @@ const update = async (): Promise<void> => {
     if (selected.value.length === 1) {
         const clusterId = selected.value[0];
         try {
+            if (checkName(editClusterName.value) || checkName(editSponsor.value) || checkName(editSponsorUrl.value) || checkName(editSponsorBanner.value)) {
+                modifytext.value = "名称不能包含特殊字符";
+                snackbar.value = true;
+                return;
+            }
+
             const requestBody: Record<string, any> = {
                 name: editClusterName.value || undefined,
                 bandwidth: editBandwidth.value !== null ? Number(editBandwidth.value) : undefined,

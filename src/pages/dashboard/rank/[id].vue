@@ -38,7 +38,7 @@
         <v-card>
           <v-card-text>
             <div>🎉感谢 “<strong>{{ name }}</strong>” 的支持！🎉</div>
-            <div>此节点今日共承担 {{ formataBytes(traffic.bytes) }} 的流量，共计 {{ traffic.hits }} 次访问。</div>
+            <div>此节点今日共承担 {{ formatBytes(traffic.bytes) }} 的流量，共计 {{ traffic.hits }} 次访问。</div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -63,13 +63,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import { Cluster } from '@/types/ClusterModel';
-
-const formataBytes = (bytes: number): string => {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-  if (bytes === 0) return '0 Bytes';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
-};
+import { formatBytes } from '@/types/Utilities';
 
 const sponsor = ref('Sponsor Name');
 const sponsorBanner = ref('');

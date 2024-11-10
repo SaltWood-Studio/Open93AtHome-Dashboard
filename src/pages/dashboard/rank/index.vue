@@ -65,6 +65,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import DoubleChartCard from '@/components/DoubleChartCard.vue';
 import { Cluster } from '@/types/ClusterModel';
+import { formatBytes, convertArrayElements } from '@/types/Utilities';
 
 const headers = ref<{ title: string; value: string; sortable?: boolean }[]>([
   { title: '节点名次', value: 'rank' },
@@ -84,32 +85,6 @@ const dialog = ref<boolean>(false);  // 控制弹出窗口的显示与隐藏
 const selectedClusterData = ref<number[][] | null>(null);  // 用于存储点击后的统计数据
 const selectedClusterTitle = ref<string>('');  // 用于显示点击的节点名称
 const xAxisData = ref<string[]>([]);  // 用于双图表的 x 轴数据
-
-const formatBytes = (bytes: number): string => {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 Bytes';
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-function convertArrayElements(array: number[]): { converted: string[]; targetUnit: string } {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-
-  // 找到数组中的最大字节值
-  const maxBytes = Math.max(...array);
-
-  // 根据最大字节值计算最适合的单位
-  const maxIndex = Math.min(4, Math.floor(Math.log(maxBytes || 1) / Math.log(1024)));
-  const targetUnit = units[maxIndex];
-
-  // 转换每个字节值到统一的单位
-  const convertedArray = array.map(byteValue => {
-    const i = Math.min(maxIndex, Math.floor(Math.log(byteValue || 1) / Math.log(1024)));
-    return (byteValue / Math.pow(1024, maxIndex)).toFixed(2);
-  });
-
-  return { converted: convertedArray, targetUnit };
-}
 
 onMounted(async () => {
   try {

@@ -49,6 +49,7 @@
         <v-tabs-window-item key="1">
           <v-text-field label="名称" :model-value="sponsor" readonly></v-text-field>
           <v-text-field label="跳转链接" :model-value="sponsorUrl" readonly></v-text-field>
+          <v-text-field label="Banner" :model-value="sponsorBanner" readonly></v-text-field>
         </v-tabs-window-item>
       </v-tabs-window>
 
@@ -95,6 +96,10 @@ const props = defineProps({
     required: true,
   },
   sponsorUrl: {
+    type: String,
+    required: true,
+  },
+  sponsorBanner: {
     type: String,
     required: true,
   },
