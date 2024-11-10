@@ -10,8 +10,8 @@
   
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import * as echarts from 'echarts';
 
+// Props definition
 const props = defineProps({
   title: {
     type: String,
@@ -50,90 +50,102 @@ const props = defineProps({
 const chartRef = ref(null);
 const xAxis = ref(props.xAxis);
 
-const initChart = () => {
-    if (chartRef.value) {
-        const myChart = echarts.init(chartRef.value);
+// 按需加载 ECharts 模块和组件
+const initChart = async () => {
+  if (chartRef.value) {
+    // 动态加载 ECharts 核心模块及相关组件
+    const { default: echarts } = await import('echarts/core');
+    const { LineChart } = await import('echarts/charts');
+    const { TitleComponent, TooltipComponent, GridComponent } = await import('echarts/components');
+    const { CanvasRenderer } = await import('echarts/renderers');
+
+    // 注册所需要的组件和图表
+    echarts.use([LineChart, TitleComponent, TooltipComponent, GridComponent, CanvasRenderer]);
+
+    const myChart = echarts.init(chartRef.value);
+
+    const xAxisData = xAxis.value; // X轴为0时到23时
   
-        const xAxisData = xAxis.value; // X轴为0时到23时
-  
-        const option = {
-            title: {
-                subtext: props.subtitle,
+    const option = {
+      title: {
+        subtext: props.subtitle,
+      },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross', // 十字指示器
+        },
+        formatter: function (params) {
+          let result = `<b>${params[0].axisValue}</b><br/>`;
+          params.forEach((param) => {
+            const unit = param.seriesName;
+            result += `<div style="color:${param.color};">${param.marker}${param.value} ${unit}</div>`;
+          });
+          return result;
+        },
+      },
+      xAxis: {
+        type: 'category',
+        data: xAxisData,
+      },
+      yAxis: [
+        {
+          type: 'value',
+          name: props.units[0], // 左侧 Y 轴单位
+          position: 'left',
+          axisLine: {
+            lineStyle: {
+              color: props.colors[0], // 左侧 Y 轴线颜色
             },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'cross', // 十字指示器
-                },
-                formatter: function (params) {
-                    let result = `<b>${params[0].axisValue}</b><br/>`;
-                    params.forEach((param) => {
-                        const unit = param.seriesName;
-                        result += `<div style="color:${param.color};">${param.marker}${param.value} ${unit}</div>`;
-                    });
-                    return result;
-                },
+          },
+        },
+        {
+          type: 'value',
+          name: props.units[1], // 右侧 Y 轴单位
+          position: 'right',
+          axisLine: {
+            lineStyle: {
+              color: props.colors[1], // 右侧 Y 轴线颜色
             },
-            xAxis: {
-                type: 'category',
-                data: xAxisData,
-            },
-            yAxis: [
-                {
-                    type: 'value',
-                    name: props.units[0], // 左侧 Y 轴单位
-                    position: 'left',
-                    axisLine: {
-                        lineStyle: {
-                          color: props.colors[0], // 左侧 Y 轴线颜色
-                        },
-                    },
-                },
-                {
-                  type: 'value',
-                  name: props.units[1], // 右侧 Y 轴单位
-                  position: 'right',
-                  axisLine: {
-                    lineStyle: {
-                      color: props.colors[1], // 右侧 Y 轴线颜色
-                    },
-                  },
-                },
-            ],
-            series: [
-                {
-                    name: props.units[0], // 第一条折线的单位名
-                    type: 'line',
-                    data: props.data.map(item => item[0]), // 第一条折线数据
-                    smooth: true,
-                    yAxisIndex: 0, // 对应左侧 Y 轴
-                    areaStyle: {
-                      color: props.areaColors[0], // 第一条折线面积颜色
-                    },
-                    itemStyle: {
-                      color: props.colors[0], // 第一条折线颜色
-                    },
-                },
-                {
-                    name: props.units[1], // 第二条折线的单位名
-                    type: 'line',
-                    data: props.data.map(item => item[1]), // 第二条折线数据
-                    smooth: true,
-                    yAxisIndex: 1, // 对应右侧 Y 轴
-                    areaStyle: {
-                        color: props.areaColors[1], // 第二条折线面积颜色
-                    },
-                    itemStyle: {
-                        color: props.colors[1], // 第二条折线颜色
-                    }
-                },
-            ],
-        };
-        myChart.setOption(option);
+          },
+        },
+      ],
+      series: [
+        {
+          name: props.units[0], // 第一条折线的单位名
+          type: 'line',
+          data: props.data.map(item => item[0]), // 第一条折线数据
+          smooth: true,
+          yAxisIndex: 0, // 对应左侧 Y 轴
+          areaStyle: {
+            color: props.areaColors[0], // 第一条折线面积颜色
+          },
+          itemStyle: {
+            color: props.colors[0], // 第一条折线颜色
+          },
+        },
+        {
+          name: props.units[1], // 第二条折线的单位名
+          type: 'line',
+          data: props.data.map(item => item[1]), // 第二条折线数据
+          smooth: true,
+          yAxisIndex: 1, // 对应右侧 Y 轴
+          areaStyle: {
+            color: props.areaColors[1], // 第二条折线面积颜色
+          },
+          itemStyle: {
+            color: props.colors[1], // 第二条折线颜色
+          }
+        },
+      ],
+    };
+
+    myChart.setOption(option);
   }
 };
 
 onMounted(initChart);
 
+// 监听数据变化，重新初始化图表
 watch(() => props.data, initChart);
 </script>
