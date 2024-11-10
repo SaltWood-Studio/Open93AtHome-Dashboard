@@ -87,7 +87,7 @@ onMounted(async () => {
     try {
         const response = (await axios.get(`/api/clusters/${route.params.id}`)).data;
         sponsor.value = response.sponsor;
-        sponsorBanner.value = response.sponsorBanner;
+        if (response.sponsorBanner) sponsorBanner.value = response.sponsorBanner;
         sponsorUrl.value = response.sponsorUrl;
         cluster.value = response;
         traffic.bytes = response.bytes;
