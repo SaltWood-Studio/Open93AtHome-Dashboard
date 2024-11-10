@@ -4,12 +4,12 @@
     <v-row justify="center">
       <v-col class="text-center">
         <!-- Sponsor Name -->
-        <h1>{{ sponsor }}</h1>
+        <h1>{{ hasError? '加载失败！' : sponsor }}</h1>
       </v-col>
     </v-row>
 
     <!-- Image with 16:9 aspect ratio -->
-    <v-row justify="center" v-if="!imageError">
+    <v-row justify="center" v-if="!imageError && !hasError">
       <v-col class="text-center" cols="12" md="8">
         <v-img
           :src="sponsorBanner"
@@ -23,7 +23,7 @@
       </v-col>
     </v-row>
 
-    <v-row justify="center">
+    <v-row justify="center" v-if="!hasError">
       <v-col class="text-center">
         <v-card>
           <v-card-text>
@@ -35,7 +35,7 @@
     </v-row>
 
     <!-- Button -->
-    <v-row justify="center">
+    <v-row justify="center" v-if="!hasError">
       <v-col class="text-center">
         <v-btn
           color="primary"
@@ -65,6 +65,7 @@ const sponsor = ref('Sponsor Name');
 const sponsorBanner = ref('https://via.placeholder.com/800x450');
 const sponsorUrl = ref('https://www.sponsorpage.com');
 const imageError = ref(false);
+const hasError = ref(false);
 const cluster = ref<Cluster | null>(null);
 const name = ref('Cluster Name');
 const traffic = {
@@ -83,14 +84,20 @@ function openSponsorPage() {
 }
 
 onMounted(async () => {
-    const response = (await axios.get(`/api/clusters/${route.params.id}`)).data;
-    sponsor.value = response.sponsor;
-    sponsorBanner.value = response.sponsorBanner;
-    sponsorUrl.value = response.sponsorUrl;
-    cluster.value = response;
-    traffic.bytes = response.bytes;
-    traffic.hits = response.hits;
-    name.value = response.clusterName;
+    try {
+        const response = (await axios.get(`/api/clusters/${route.params.id}`)).data;
+        sponsor.value = response.sponsor;
+        sponsorBanner.value = response.sponsorBanner;
+        sponsorUrl.value = response.sponsorUrl;
+        cluster.value = response;
+        traffic.bytes = response.bytes;
+        traffic.hits = response.hits;
+        name.value = response.clusterName;
+    }
+    catch (error) {
+        console.error(error);
+        hasError.value = true;
+    }
 });
 </script>
 

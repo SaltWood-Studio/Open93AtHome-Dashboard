@@ -11,7 +11,7 @@
               <span class="font-weight-black">#{{ item.rank }}</span>
             </template>
             <template v-slot:item.sponsor="{ item }">
-              <a :href="item.sponsorUrl">{{ item.sponsor }}</a>
+              <a :href="`/dashboard/rank/${item.clusterId}`">{{ item.sponsor }}</a>
             </template>
             <template v-slot:item.fullsize="{ item }">
               <v-chip :color="item.fullsize ? 'cyan' : 'orange'"
