@@ -32,7 +32,18 @@
         </v-card-text>
       </v-card>
     </v-col>
+
+    <v-divider></v-divider>
   </v-row>
+
+  <v-row>
+    <v-col class="text-center">
+      <p>
+        默认仅显示 15 天内有活动的节点，具体时间范围取决于服务端设定。
+      </p>
+    </v-col>
+  </v-row>
+
   <!-- Ray 和 浮杨 大佬保佑我 Dash 永不报错，永不出 Bug -->
   <v-dialog v-model="dialog" max-width="1000px" @click:outside="closeDialog">
     <v-card>
