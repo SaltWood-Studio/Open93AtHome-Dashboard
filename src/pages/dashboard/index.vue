@@ -123,7 +123,7 @@ const onlines = ref<string>('');
 const sourceCount = ref<string>('');
 const totalFiles = ref<string>('');
 const totalSize = ref<string>('');
-let uptimeInterval: NodeJS.Timeout | null;
+let uptimeInterval: number | undefined;
 
 const formataBytes = (bytes: number): string => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
