@@ -14,7 +14,7 @@
                 <v-tabs-window-item key="0">
                     <v-text-field label="ID" :model-value="cluster.clusterId" readonly></v-text-field>
                     <v-text-field label="名称" v-model="cluster.clusterName" :readonly="!modify"
-                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''" :rules="[checkNameRule]"></v-text-field>
                     <v-text-field label="Endpoint" :model-value="`${cluster.endpoint}:${cluster.port}`"
                         readonly></v-text-field>
                     <v-text-field label="上行速率" v-model="cluster.bandwidth" :readonly="!modify" suffix="Mbps"
@@ -45,11 +45,11 @@
 
                 <v-tabs-window-item key="1">
                     <v-text-field label="名称" v-model="cluster.sponsor" :readonly="!modify"
-                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''" :rules="[checkNameRule]"></v-text-field>
                     <v-text-field label="跳转链接" v-model="cluster.sponsorUrl" :readonly="!modify"
-                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''" :rules="[checkNameRule]"></v-text-field>
                     <v-text-field label="Banner" v-model="cluster.sponsorBanner" :readonly="!modify"
-                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''" :rules="[checkNameRule]"></v-text-field>
 
                     <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
                         <span v-if="modify">确认更改</span>
@@ -122,7 +122,7 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Cluster } from '@/types/ClusterModel';
-import { checkName, formatCreatedAt } from '@/types/Utilities';
+import { checkName, checkNameRule, formatCreatedAt } from '@/types/Utilities';
 
 // 设置响应变量
 const router = useRouter();

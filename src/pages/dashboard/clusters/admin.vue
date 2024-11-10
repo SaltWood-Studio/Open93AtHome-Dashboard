@@ -97,6 +97,7 @@
                 <v-text-field
                     v-model="editClusterName"
                     label="集群名称"
+                    :rules="[checkNameRule]"
                 ></v-text-field>
                 <v-text-field
                     v-model="editBandwidth"
@@ -106,14 +107,17 @@
                 <v-text-field
                     v-model="editSponsor"
                     label="赞助商"
+                    :rules="[checkNameRule]"
                 ></v-text-field>
                 <v-text-field
                     v-model="editSponsorUrl"
                     label="赞助商网址"
+                    :rules="[checkNameRule]"
                 ></v-text-field>
                 <v-text-field
                     v-model="editSponsorBanner"
                     label="赞助商 Banner"
+                    :rules="[checkNameRule]"
                 ></v-text-field>
                 <v-checkbox
                     v-model="editProxy"
@@ -193,7 +197,7 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { Cluster } from '@/types/ClusterModel';
-import { checkName } from '@/types/Utilities';
+import { checkName, checkNameRule } from '@/types/Utilities';
 
 const items = ref<Cluster[]>([]);
 const selected = ref<string[]>([]);

@@ -77,3 +77,7 @@ export function formatCreatedAt(createdAt: string): string {
 export function checkName(name: string): boolean {
     return !bannedCharacters.test(name);
 };
+
+export function checkNameRule(name: string): boolean | string {
+    return bannedCharacters.test(name) ? '名称不能包含特殊字符' : true;
+}
