@@ -25,6 +25,12 @@
                 {{ item.isMasterStats ? '主控统计' : '节点统计' }}
             </v-chip>
         </template>
+        <template v-slot:item.noWarden="{ item }">
+            <v-chip :color="item.noWarden ? 'red' : 'green'"
+                :prepend-icon="item.noWarden ? 'mdi-alert-outline' : 'mdi-check'" label>
+                {{ item.noWarden ? '禁用巡检' : '正常' }}
+            </v-chip>
+        </template>
     </v-data-table>
 
     <v-btn prepend-icon="mdi-cancel" @click="ban" color="pink">
