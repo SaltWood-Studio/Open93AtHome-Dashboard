@@ -17,5 +17,6 @@ export interface Cluster {
     fullsize: boolean;
     isMasterStats: boolean;
     isProxy: boolean;
+    noWarden: boolean;
     shards: number;
 }

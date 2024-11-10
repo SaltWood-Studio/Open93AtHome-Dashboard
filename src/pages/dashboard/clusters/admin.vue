@@ -121,11 +121,15 @@
                 ></v-text-field>
                 <v-checkbox
                     v-model="editProxy"
-                    label="代理节点"
+                    label="反代节点"
                 ></v-checkbox>
                 <v-checkbox
                     v-model="editMasterStats"
                     label="启用主控统计"
+                ></v-checkbox>
+                <v-checkbox
+                    v-model="editWarden"
+                    label="禁用巡检"
                 ></v-checkbox>
             </v-card-text>
             <v-card-actions>
@@ -219,6 +223,7 @@ const editSponsorUrl = ref<string>('');
 const editSponsorBanner = ref<string>('');
 const editProxy = ref<boolean>(false);
 const editMasterStats = ref<boolean>(false);
+const editWarden = ref<boolean>(false);
 
 const newClusterId = ref<string>('');
 const newClusterSecret = ref<string>('');
@@ -243,7 +248,8 @@ const getlist = async (): Promise<void> => {
             fullsize: item.fullsize,
             isBanned: item.isBanned,
             isMasterStats: item.isMasterStats,
-            isProxy: item.isProxy
+            isProxy: item.isProxy,
+            noWarden: item.noWarden,
         }));
     } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -298,6 +304,7 @@ const openEditDialog = (): void => {
             editDialog.value = true;
             editProxy.value = cluster.isProxy;
             editMasterStats.value = cluster.isMasterStats;
+            editWarden.value = cluster.noWarden;
         }
     }
 };
@@ -319,7 +326,8 @@ const update = async (): Promise<void> => {
                 sponsorUrl: editSponsorUrl.value || undefined,
                 sponsorBanner: editSponsorBanner.value || undefined,
                 isProxy: editProxy.value,
-                isMasterStats: editMasterStats.value
+                isMasterStats: editMasterStats.value,
+                noWarden: editWarden.value,
             };
             Object.keys(requestBody).forEach(key => requestBody[key] === undefined && delete requestBody[key]);
 
@@ -335,6 +343,7 @@ const update = async (): Promise<void> => {
             editSponsorBanner.value = '';
             editProxy.value = false;
             editMasterStats.value = false;
+            editWarden.value = false;
 
             modifytext.value = "成功更新节点信息";
             snackbar.value = true;
