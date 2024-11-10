@@ -48,6 +48,8 @@
                         :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
                     <v-text-field label="跳转链接" v-model="cluster.sponsorUrl" :readonly="!modify"
                         :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
+                    <v-text-field label="Banner" v-model="cluster.sponsorBanner" :readonly="!modify"
+                        :append-inner-icon="modify ? 'mdi-pencil' : ''"></v-text-field>
 
                     <v-btn :prepend-icon="modify ? 'mdi-check' : 'mdi-pencil'" @click="modifyinf" color="primary">
                         <span v-if="modify">确认更改</span>
@@ -173,6 +175,7 @@ const modifyinf = async () => {
                 bandwidth: cluster.value?.bandwidth,
                 sponsor: cluster.value?.sponsor,
                 sponsorUrl: cluster.value?.sponsorUrl,
+                sponsorBanner: cluster.value?.sponsorBanner,
             });
             modifytext.value = "成功修改信息";
             snackbar.value = true;

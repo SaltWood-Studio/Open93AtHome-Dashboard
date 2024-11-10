@@ -6,6 +6,7 @@ export interface Cluster {
     bandwidth: number;
     sponsor: string;
     sponsorUrl: string;
+    sponsorBanner: string;
     endpoint: string;
     port: number;
     createdAt: string;

@@ -12,7 +12,7 @@
     <v-row justify="center" v-if="!imageError">
       <v-col class="text-center" cols="12" md="8">
         <v-img
-          :src="sponsorPicture"
+          :src="sponsorBanner"
           max-width="100%"
           height="auto"
           aspect-ratio="16/9"
@@ -39,7 +39,7 @@
       <v-col class="text-center">
         <v-btn
           color="primary"
-          @click="goToSponsorPage"
+          @click="openSponsorPage"
         >
           跳转至赞助商页面
         </v-btn>
@@ -62,7 +62,7 @@ const formataBytes = (bytes: number): string => {
 };
 
 const sponsor = ref('Sponsor Name');
-const sponsorPicture = ref('https://via.placeholder.com/800x450');
+const sponsorBanner = ref('https://via.placeholder.com/800x450');
 const sponsorUrl = ref('https://www.sponsorpage.com');
 const imageError = ref(false);
 const cluster = ref<Cluster | null>(null);
@@ -73,20 +73,19 @@ const traffic = {
 }
 
 const route = useRoute();
-const router = useRouter();
 
 function handleImageError() {
     imageError.value = true;
 }
 
-function goToSponsorPage() {
+function openSponsorPage() {
     window.location.href = sponsorUrl.value;
 }
 
 onMounted(async () => {
     const response = (await axios.get(`/api/clusters/${route.params.id}`)).data;
     sponsor.value = response.sponsor;
-    sponsorPicture.value = response.sponsorPicture;
+    sponsorBanner.value = response.sponsorBanner;
     sponsorUrl.value = response.sponsorUrl;
     cluster.value = response;
     traffic.bytes = response.bytes;
