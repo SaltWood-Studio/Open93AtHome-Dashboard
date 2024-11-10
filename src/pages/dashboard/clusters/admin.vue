@@ -111,6 +111,10 @@
                     v-model="editSponsorUrl"
                     label="赞助商网址"
                 ></v-text-field>
+                <v-text-field
+                    v-model="editSponsorBanner"
+                    label="赞助商 Banner"
+                ></v-text-field>
                 <v-checkbox
                     v-model="editProxy"
                     label="代理节点"
@@ -207,6 +211,7 @@ const editClusterName = ref<string>('');
 const editBandwidth = ref<number | null>(null);
 const editSponsor = ref<string>('');
 const editSponsorUrl = ref<string>('');
+const editSponsorBanner = ref<string>('');
 const editProxy = ref<boolean>(false);
 const editMasterStats = ref<boolean>(false);
 
@@ -283,7 +288,8 @@ const openEditDialog = (): void => {
             editClusterName.value = cluster.clusterName;
             editBandwidth.value = cluster.bandwidth;
             editSponsor.value = ''; 
-            editSponsorUrl.value = ''; 
+            editSponsorUrl.value = '';
+            editSponsorBanner.value = '';
             editDialog.value = true;
             editProxy.value = cluster.isProxy;
             editMasterStats.value = cluster.isMasterStats;
@@ -300,6 +306,7 @@ const update = async (): Promise<void> => {
                 bandwidth: editBandwidth.value !== null ? Number(editBandwidth.value) : undefined,
                 sponsor: editSponsor.value || undefined,
                 sponsorUrl: editSponsorUrl.value || undefined,
+                sponsorBanner: editSponsorBanner.value || undefined,
                 isProxy: editProxy.value,
                 isMasterStats: editMasterStats.value
             };
@@ -314,6 +321,7 @@ const update = async (): Promise<void> => {
             editBandwidth.value = null;
             editSponsor.value = '';
             editSponsorUrl.value = '';
+            editSponsorBanner.value = '';
             editProxy.value = false;
             editMasterStats.value = false;
 
