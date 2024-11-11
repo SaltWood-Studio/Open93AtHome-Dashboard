@@ -15,12 +15,12 @@
 1. 克隆此仓库到本地：
 
 ```bash
-git clone https://github.com/Mxmilu666/93Home-Dash.git
+git clone https://github.com/SaltWood-Studio/Open93AtHome-Dashboard.git
 ```
 
 2. 进入项目目录并安装依赖：
 ```bash
-cd 93Home-Dash
+cd Open93AtHome-Dashboard
 npm install
 ```
 
