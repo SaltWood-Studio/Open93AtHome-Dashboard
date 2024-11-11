@@ -43,13 +43,14 @@ npm run build
 
 ## 🌟 致谢
 
->[@unify-z](https://github.com/unify-z) 协助写了一部分逻辑代码
->
->此面板设计部分参考了 [iodine-dashboard](https://github.com/ZeroNexis/iodine-dashboard) ，快去给它点个 star ⭐！
->
->从学 Vue 到写完这个项目一共一个星期左右，很多代码来自 ChatGPT，如果写的代码有问题，大佬们请轻喷。
->
-> 希望 [@so1ve](https://github.com/so1ve) 保佑我的代码没有任何 Bug ，没有任何报错呜呜呜
+- [@Mxmilu666](https://github.com/Mxmilu666) 本项目的作者，后将此项目移到组织并且~~没再管过~~暂停对本项目维护
+- [@unify-z](https://github.com/unify-z) 协助写了一部分逻辑代码
+
+## 👀 碎碎念
+
+- 此面板设计部分参考了 [iodine-dashboard](https://github.com/ZeroNexis/iodine-dashboard) ，快去给它点个 star ⭐！
+- 从学 Vue 到写完这个项目一共一个星期左右，很多代码来自 ChatGPT，如果写的代码有问题，大佬们请轻喷。
+- 希望 [@so1ve](https://github.com/so1ve) 保佑我的代码没有任何 Bug ，没有任何报错呜呜呜
 
 ## 📄 许可证
 本项目采用 ``MIT 许可证`` 开源。
