@@ -3,7 +3,7 @@
 ![93Home-Dash](https://socialify.git.ci/SaltWood-Studio/Open93AtHome-Dashboard/image?description=1&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 
 # 93Home-Dash 
-✨ 一个 93@Home 的 DashBoard 基于 Vue + Vuetify ✨
+✨ 为 Open93@Home 编写的 Dashboard，使用 TypeScript + Vue + Vuetify ✨
 </div>
 
 [效果预览](https://saltwood.top:9393/dashboard/)
@@ -36,7 +36,7 @@ npm run build
 ## 🔧 使用技术栈
 - Vue.js - 构建用户界面的渐进式 JavaScript 框架。
 - Vuetify - 基于 Material Design 的 Vue UI 库，提供丰富的 UI 组件。
-- [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) - 单文件路由，让我从写路由的水生火热中得到了解脱
+- [unplugin-vue-router](https://github.com/posva/unplugin-vue-router) - 单文件路由，让我从写路由的水深火热中得到了解脱
 - [vite-plugin-vue-layouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts) - 提供的方便易用的 Layout
 
 
