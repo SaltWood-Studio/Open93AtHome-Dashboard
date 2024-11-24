@@ -3,13 +3,7 @@
     <!-- 搜索栏和刷新按钮 -->
     <v-row class="mb-0 align-center">
       <v-col cols="11">
-        <v-text-field
-          v-model="search"
-          label="搜索同步源"
-          clearable
-          append-icon="mdi-magnify"
-          class="search-bar"
-        />
+        <v-text-field v-model="search" label="搜索同步源" clearable append-icon="mdi-magnify" class="search-bar" />
       </v-col>
       <v-col cols="1" class="d-flex justify-end align-center">
         <v-btn color="primary" large @click="showDialog = true" class="btn">
@@ -20,28 +14,16 @@
 
     <!-- 卡片展示 -->
     <v-row class="mt-1">
-      <v-col
-        v-for="source in filteredSources"
-        :key="source.name"
-        cols="12"
-        md="4"
-        class="mb-3"
-      >
+      <v-col v-for="source in filteredSources" :key="source.name" cols="12" md="4" class="mb-3">
         <v-card>
           <v-card-title>
             <v-avatar v-if="source.imageExists" size="40" class="mr-3">
-              <img
-                :src="`/assets/sources/${source.name}.png`"
-                alt="source image"
-                class="avatar-image"
-              />
+              <img :src="`/assets/sources/${source.name}.png`" alt="source image" class="avatar-image" />
             </v-avatar>
-            <span
-              :class="{
-                headline: true,
-                'no-avatar': !source.imageExists,
-              }"
-            >
+            <span :class="{
+              headline: true,
+              'no-avatar': !source.imageExists,
+            }">
               {{ source.name }}
             </span>
           </v-card-title>
@@ -74,10 +56,10 @@
     <v-snackbar v-model="snackbar" :timeout="3000">
       {{ snackbarMessage }}
       <template v-slot:actions>
-            <v-btn color="primary" variant="text" @click="snackbar = false">
-                关闭
-            </v-btn>
-        </template>
+        <v-btn color="primary" variant="text" @click="snackbar = false">
+          关闭
+        </v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
@@ -159,24 +141,35 @@ onMounted(fetchSources);
 .headline {
   font-weight: bold;
 }
+
 .no-avatar {
   margin-left: 0;
 }
+
 .avatar-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 确保图片填充整个圆形区域 */
-  border-radius: 50%; /* 确保图片是圆形的 */
+  object-fit: cover;
+  /* 确保图片填充整个圆形区域 */
+  border-radius: 50%;
+  /* 确保图片是圆形的 */
 }
+
 .mt-0 {
-  margin-top: 0 !important; /* 整体向上靠近页面顶端 */
+  margin-top: 0 !important;
+  /* 整体向上靠近页面顶端 */
 }
+
 .search-bar {
-  margin-right: 0px; /* 恢复搜索栏与刷新按钮的原始间距 */
+  margin-right: 0px;
+  /* 恢复搜索栏与刷新按钮的原始间距 */
 }
+
 .large-btn {
-  height: 56px; /* 增大按钮高度 */
-  font-size: 16px; /* 增大字体以提升按钮可见度 */
+  height: 56px;
+  /* 增大按钮高度 */
+  font-size: 16px;
+  /* 增大字体以提升按钮可见度 */
 }
 </style>
 
