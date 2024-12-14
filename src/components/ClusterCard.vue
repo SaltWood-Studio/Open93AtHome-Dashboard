@@ -1,10 +1,10 @@
 <template>
   <v-card height="520px">
     <v-card-title
-      :class="{ 'font-weight-black grey-bg white-text': isBanned, 'font-weight-black red-bg white-text': !isOnline && !isBanned, 'font-weight-black green-bg white-text': isOnline && !isBanned}">
+      :class="{ 'font-weight-black grey-bg white-text': cluster.isBanned, 'font-weight-black red-bg white-text': !cluster.isOnline && !cluster.isBanned, 'font-weight-black green-bg white-text': cluster.isOnline && !cluster.isBanned}">
       <v-row align="center" no-gutters>
         <v-col>
-          <span>{{ clusterName }}</span>
+          <span>{{ cluster.clusterName }}</span>
         </v-col>
         <v-btn icon variant="text" @click="toCluster">
           <v-icon>mdi-cog</v-icon>
@@ -22,9 +22,9 @@
     <v-card-text>
       <v-tabs-window v-model="activeTab">
         <v-tabs-window-item key="0">
-          <v-text-field label="ID" :model-value="clusterId" readonly></v-text-field>
-          <v-text-field label="Endpoint" :model-value="endPoint" readonly></v-text-field>
-          <v-text-field label="上行速率" :model-value="bandwidth" readonly></v-text-field>
+          <v-text-field label="ID" :model-value="cluster.clusterId" readonly></v-text-field>
+          <v-text-field label="Endpoint" :model-value="cluster.endpoint" readonly></v-text-field>
+          <v-text-field label="上行速率" :model-value="cluster.bandwidth" readonly></v-text-field>
 
           <v-divider></v-divider>
 
@@ -34,22 +34,22 @@
             </v-col>
             <v-col class="text-right">
               <v-chip
-                :class="fullsize ? 'blue-border blue-bg white-text' : 'blue-border white-bg blue-text'"
+                :class="cluster.fullsize ? 'blue-border blue-bg white-text' : 'blue-border white-bg blue-text'"
                 :style="{ marginLeft: 'auto' }"
               >
-                <strong>{{ fullsize ? '全量' : '分片' }}</strong>
+                <strong>{{ cluster.fullsize ? '全量' : '分片' }}</strong>
               </v-chip>
             </v-col>
           </v-row>
 
-          <v-text-field class="mt-5" label="创建日期" :model-value="createdAt" readonly></v-text-field>
+          <v-text-field class="mt-5" label="创建日期" :model-value="cluster.createdAt" readonly></v-text-field>
 
         </v-tabs-window-item>
 
         <v-tabs-window-item key="1">
-          <v-text-field label="名称" :model-value="sponsor" readonly></v-text-field>
-          <v-text-field label="跳转链接" :model-value="sponsorUrl" readonly></v-text-field>
-          <v-text-field label="Banner" :model-value="sponsorBanner" readonly></v-text-field>
+          <v-text-field label="名称" :model-value="cluster.sponsor" readonly></v-text-field>
+          <v-text-field label="跳转链接" :model-value="cluster.sponsorUrl" readonly></v-text-field>
+          <v-text-field label="Banner" :model-value="cluster.sponsorBanner" readonly></v-text-field>
         </v-tabs-window-item>
       </v-tabs-window>
 
@@ -60,52 +60,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { Cluster } from '@/types/ClusterModel';
 
 const props = defineProps({
   // 迟早把这个改成传入数组（
-  clusterId: {
-    type: String,
-    required: true,
-  },
-  clusterName: {
-    type: String,
-    required: true,
-  },
-  endPoint: {
-    type: String,
-    required: true,
-  },
-  bandwidth: {
-    type: Number,
-    required: true,
-  },
-  createdAt: {
-    type: String,
-    required: true,
-  },
-  isOnline: {
-    type: Boolean,
-    required: true,
-  },
-  isBanned: {
-    type: Boolean,
-    required: true,
-  },
-  sponsor: {
-    type: String,
-    required: true,
-  },
-  sponsorUrl: {
-    type: String,
-    required: true,
-  },
-  sponsorBanner: {
-    type: String,
-    required: true,
-  },
-  fullsize: {
-    type: Boolean,
-    required: true,
+  // 改了，改成传入模型
+  cluster: {
+    type: Cluster,
+    required: true
   }
 });
 
@@ -113,7 +75,7 @@ const activeTab = ref(0);
 const router = useRouter();
 
 const toCluster = () => {
-  router.push({ path: `/dashboard/clusters/${props.clusterId}` });
+  router.push({ path: `/dashboard/clusters/${props.cluster.clusterId}` });
 };
 
 </script>

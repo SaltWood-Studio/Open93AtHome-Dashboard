@@ -1,4 +1,4 @@
-export interface Cluster {
+export class Cluster {
     rank?: number;
     name: string;
     clusterId: string;
