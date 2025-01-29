@@ -54,9 +54,12 @@
         <span>修改节点</span>
     </v-btn>
 
-    <!-- 新的修改分片按钮 -->
     <v-btn class="ms-2" prepend-icon="mdi-database" :disabled="!canEdit" @click="openShardsDialog" color="pink">
         <span>修改分片</span>
+    </v-btn>
+
+    <v-btn class="ms-2" prepend-icon="mdi-lock-reset" :disabled="!canEdit" @click="openResetSecretDialog" color="pink">
+        <span>重置密钥</span>
     </v-btn>
 
     <v-snackbar v-model="snackbar" timeout="3000">
@@ -201,6 +204,20 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <v-dialog v-model="resetDialog" max-width="400px">
+        <v-card>
+            <v-card-title>
+                <span class="headline">充值密钥</span>
+            </v-card-title>
+            <v-card-text>
+                <span style="font-weight: bold;">新的密钥：<strong>{{ newClusterSecret }}</strong></span>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn @click="resetDialog = false" color="grey" text="确认"/>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -208,6 +225,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { Cluster } from '@/types/ClusterModel';
 import { checkName, checkNameRule } from '@/types/Utilities';
+import { tr } from 'vuetify/locale';
 
 const items = ref<Cluster[]>([]);
 const selected = ref<string[]>([]);
@@ -218,6 +236,7 @@ const editDialog = ref<boolean>(false);
 const shardsDialog = ref<boolean>(false);
 const showInfoDialog = ref<boolean>(false);
 const removeDialog = ref<boolean>(false);
+const resetDialog = ref<boolean>(false);
 
 const newClusterName = ref<string>('');
 const newBandwidth = ref<number | null>(null);
@@ -492,6 +511,18 @@ const removeClusters = async (): Promise<void> => {
         console.error("Failed to remove clusters:", error);
     }
 };
+
+const openResetSecretDialog = async (): Promise<void> => {
+    try {
+        const response = await axios.patch<{ clusterSecret: string }>(`/api/clusters/${selected.value}/secret`);
+        newClusterSecret.value = response.data.clusterSecret;
+        resetDialog.value = true;
+    } catch (error) {
+        modifytext.value = `重置失败：${error}`;
+        snackbar.value = true;
+        console.error(error);
+    }
+}
 
 onMounted(async () => {
     await getlist();
